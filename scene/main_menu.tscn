@@ -1,0 +1,468 @@
+[gd_scene format=3 uid="uid://c65j2o7vkncca"]
+
+[ext_resource type="Texture2D" uid="uid://co6rxnh45i58w" path="res://asset/map_and_bg/background_mainmenu.jpg" id="1_bg"]
+[ext_resource type="AudioStream" uid="uid://bquw20k8ailb" path="res://asset/music/Poker Table – Royalty Free Blues Music [No Copyright Music].mp3" id="2_music"]
+[ext_resource type="FontFile" uid="uid://chuhcbyp4t7fn" path="res://asset/font/mechanical-font/Mechanical-g5Y5.otf" id="3_mech_font"]
+[ext_resource type="FontFile" uid="uid://cjraayjdi4kb6" path="res://asset/font/big-scratch-brush-font/BigScratchBrush-PVY9g.ttf" id="4_brush_font"]
+[ext_resource type="Script" uid="uid://dyek7fq8mykpm" path="res://script/main_menu.gd" id="5_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_glass"]
+bg_color = Color(0.0666667, 0.0823529, 0.117647, 0.882353)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.247059, 0.27451, 0.352941, 0.588235)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.470588)
+shadow_size = 16
+
+[node name="MainMenu" type="Control" unique_id=458857071]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_script")
+
+[node name="Background" type="TextureRect" parent="." unique_id=457957664]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="BackgroundMusic" type="AudioStreamPlayer" parent="." unique_id=34673909]
+stream = ExtResource("2_music")
+autoplay = true
+
+[node name="UILayout" type="MarginContainer" parent="." unique_id=2039303609]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 80
+theme_override_constants/margin_top = 80
+theme_override_constants/margin_right = 80
+theme_override_constants/margin_bottom = 80
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UILayout" unique_id=1140761509]
+layout_mode = 2
+
+[node name="LeftPanel" type="VBoxContainer" parent="UILayout/HBoxContainer" unique_id=1233853323]
+custom_minimum_size = Vector2(750, 0)
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="MenuContainer" type="HBoxContainer" parent="UILayout/HBoxContainer/LeftPanel" unique_id=1251918016]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="MenuButtons" type="VBoxContainer" parent="UILayout/HBoxContainer/LeftPanel/MenuContainer" unique_id=1609358655]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="PlayButton" type="Button" parent="UILayout/HBoxContainer/LeftPanel/MenuContainer/MenuButtons" unique_id=457931760]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_focus_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_colors/font_hover_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_fonts/font = ExtResource("4_brush_font")
+theme_override_font_sizes/font_size = 26
+text = "PLAY"
+flat = true
+alignment = 0
+
+[node name="TutorialButton" type="Button" parent="UILayout/HBoxContainer/LeftPanel/MenuContainer/MenuButtons" unique_id=52550924]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_focus_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_colors/font_hover_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_fonts/font = ExtResource("4_brush_font")
+theme_override_font_sizes/font_size = 26
+text = "TUTORIAL"
+flat = true
+alignment = 0
+
+[node name="OptionButton" type="Button" parent="UILayout/HBoxContainer/LeftPanel/MenuContainer/MenuButtons" unique_id=937643822]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_focus_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_colors/font_hover_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_fonts/font = ExtResource("4_brush_font")
+theme_override_font_sizes/font_size = 26
+text = "OPTION"
+flat = true
+alignment = 0
+
+[node name="QuitButton" type="Button" parent="UILayout/HBoxContainer/LeftPanel/MenuContainer/MenuButtons" unique_id=1286881784]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_focus_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_colors/font_hover_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_fonts/font = ExtResource("4_brush_font")
+theme_override_font_sizes/font_size = 26
+text = "QUIT"
+flat = true
+alignment = 0
+
+[node name="SubMenuPanel" type="Panel" parent="UILayout/HBoxContainer/LeftPanel/MenuContainer" unique_id=892740788]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_glass")
+
+[node name="PanelMargin" type="MarginContainer" parent="UILayout/HBoxContainer/LeftPanel/MenuContainer/SubMenuPanel" unique_id=185275957]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -110.0
+offset_right = 182.0
+grow_vertical = 0
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 15
+
+[node name="PlaySubMenu" type="VBoxContainer" parent="UILayout/HBoxContainer/LeftPanel/MenuContainer/SubMenuPanel/PanelMargin" unique_id=1654070465]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="SoloButton" type="Button" parent="UILayout/HBoxContainer/LeftPanel/MenuContainer/SubMenuPanel/PanelMargin/PlaySubMenu" unique_id=1716013352]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_focus_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_colors/font_hover_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_fonts/font = ExtResource("4_brush_font")
+theme_override_font_sizes/font_size = 26
+text = "SOLO"
+flat = true
+alignment = 0
+
+[node name="MultiplayerButton" type="Button" parent="UILayout/HBoxContainer/LeftPanel/MenuContainer/SubMenuPanel/PanelMargin/PlaySubMenu" unique_id=168550269]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_focus_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_colors/font_hover_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_fonts/font = ExtResource("4_brush_font")
+theme_override_font_sizes/font_size = 26
+text = "MULTIPLAYER"
+flat = true
+alignment = 0
+
+[node name="Spacer2" type="Control" parent="UILayout/HBoxContainer/LeftPanel" unique_id=2116739596]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Footer" type="Label" parent="UILayout/HBoxContainer/LeftPanel" unique_id=1179301459]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.42, 0.48, 1)
+theme_override_fonts/font = ExtResource("3_mech_font")
+theme_override_font_sizes/font_size = 14
+text = "v0.1.0 - Alpha"
+vertical_alignment = 2
+
+[node name="TutorialModal" type="ColorRect" parent="." unique_id=1640057500]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.588235)
+
+[node name="TutorialPanel" type="Panel" parent="TutorialModal" unique_id=1051233773]
+custom_minimum_size = Vector2(800, 550)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -275.0
+offset_right = 400.0
+offset_bottom = 275.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_glass")
+
+[node name="Title" type="Label" parent="TutorialModal/TutorialPanel" unique_id=462313375]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 25.0
+offset_right = 200.0
+offset_bottom = 75.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_fonts/font = ExtResource("4_brush_font")
+theme_override_font_sizes/font_size = 36
+text = "HOW TO PLAY"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="TutorialModal/TutorialPanel" unique_id=367447881]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -180.0
+offset_right = 350.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_scroll_mode = 0
+
+[node name="TutorialText" type="RichTextLabel" parent="TutorialModal/TutorialPanel/ScrollContainer" unique_id=1493955337]
+custom_minimum_size = Vector2(700, 0)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/default_color = Color(0.85, 0.86, 0.9, 1)
+theme_override_fonts/normal_font = ExtResource("3_mech_font")
+theme_override_font_sizes/normal_font_size = 18
+bbcode_enabled = true
+text = "[center][font_size=24][color=#f3c23b]TUI RULES & BASICS[/color][/font_size][/center]
+
+[color=#b0b2b8]TUI is a fast-paced card game themed around Chinese Chess pieces. It features unique tactical play, hand matching, and the legendary \"Perfect\" strategy.[/color]
+
+---
+
+[font_size=20][color=#e54e4e]1. THE CARDS[/color][/font_size]
+The deck consists of [b]32 cards[/b] in total, split into [color=#ff5555]Red[/color] and [color=#555555]Black[/color] (16 cards each).
+Red cards always beat Black cards of the same rank.
+
+[b]Ranks & Quantities per color:[/b]
+• [b]General[/b] (aka King) - 1 unit
+• [b]Advisor[/b] (aka Plane) - 2 units
+• [b]Elephant[/b] - 2 units
+• [b]Rook[/b] (aka Boat) - 2 units
+• [b]Horse[/b] - 2 units
+• [b]Cannon[/b] (aka House) - 2 units
+• [b]Soldier[/b] (aka Chip) - 5 units
+
+[b]Card Power Hierarchy (Highest to Lowest):[/b]
+[color=#ffdd55]Red General > Black General > Red Advisor > Black Advisor > ... > Red Soldier > Black Soldier[/color]
+
+---
+
+[font_size=20][color=#e54e4e]2. GAMEPLAY FLOW[/color][/font_size]
+• [b]Players:[/b] 4 players, each dealt [b]8 cards[/b] at random.
+• [b]Leader:[/b] One player starts as Leader and plays a card or set.
+• [b]Play Types:[/b] All players must follow the Leader's chosen play type:
+  - [b]Single:[/b] Any single card.
+  - [b]Pair:[/b] Two cards of the [i]same character AND same color[/i] (e.g. Red Advisor + Red Advisor).
+  - [b]Noble Set:[/b] 3 to 6 cards of the same color, forming a group.
+    - [i]Royal Noble:[/i] General + Advisor + Elephant (max 5 cards)
+    - [i]War Noble:[/i] Rook + Horse + Cannon (max 6 cards)
+    - (Duplicates are allowed, e.g., General + Advisor + Advisor + Elephant)
+  - [b]Soldier Set:[/b] 3 to 5 Soldiers of the same color.
+• [b]Winning turns:[/b] The highest card/set wins the turn, collects all cards played, and becomes the new Leader.
+
+---
+
+[font_size=20][color=#e54e4e]3. FOLDING & TACTICS[/color][/font_size]
+• If you cannot follow the play type or wish to save cards, you must [b]Fold[/b].
+• Folding players choose the required number of cards to discard, which go to the turn winner.
+• [b]Perfect Tactic:[/b] If you win 7 consecutive turns from the start, your 8th and last card is a [color=#ffdd55]Black Soldier[/color], it beats ANY card (even the General!).
+
+---
+
+[font_size=20][color=#e54e4e]4. SCORING[/color][/font_size]
+At the end of a round, score points based on won cards:
+[b]Score = (Total Won Cards) ÷ 4[/b]. Maximum is 8 points per round!"
+
+[node name="CloseButton" type="Button" parent="TutorialModal/TutorialPanel" unique_id=1793886452]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -100.0
+offset_top = -75.0
+offset_right = 100.0
+offset_bottom = -25.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_focus_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_colors/font_hover_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_fonts/font = ExtResource("4_brush_font")
+theme_override_font_sizes/font_size = 24
+text = "CLOSE"
+flat = true
+
+[node name="OptionsModal" type="ColorRect" parent="." unique_id=920113119]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.588235)
+
+[node name="OptionsPanel" type="Panel" parent="OptionsModal" unique_id=344219963]
+custom_minimum_size = Vector2(600, 480)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -240.0
+offset_right = 300.0
+offset_bottom = 240.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_glass")
+
+[node name="Title" type="Label" parent="OptionsModal/OptionsPanel" unique_id=391324805]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 25.0
+offset_right = 200.0
+offset_bottom = 75.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_fonts/font = ExtResource("4_brush_font")
+theme_override_font_sizes/font_size = 36
+text = "OPTIONS"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OptionsGrid" type="GridContainer" parent="OptionsModal/OptionsPanel" unique_id=879734189]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -225.0
+offset_top = -130.0
+offset_right = 225.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/h_separation = 30
+theme_override_constants/v_separation = 18
+columns = 2
+
+[node name="MasterLabel" type="Label" parent="OptionsModal/OptionsPanel/OptionsGrid" unique_id=1761041673]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.86, 0.9, 1)
+theme_override_fonts/font = ExtResource("3_mech_font")
+theme_override_font_sizes/font_size = 20
+text = "Master Volume"
+
+[node name="MasterSlider" type="HSlider" parent="OptionsModal/OptionsPanel/OptionsGrid" unique_id=46177353]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+value = 80.0
+
+[node name="MusicLabel" type="Label" parent="OptionsModal/OptionsPanel/OptionsGrid" unique_id=2025804083]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.86, 0.9, 1)
+theme_override_fonts/font = ExtResource("3_mech_font")
+theme_override_font_sizes/font_size = 20
+text = "Music Volume"
+
+[node name="MusicSlider" type="HSlider" parent="OptionsModal/OptionsPanel/OptionsGrid" unique_id=1096811321]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+value = 70.0
+
+[node name="SfxLabel" type="Label" parent="OptionsModal/OptionsPanel/OptionsGrid" unique_id=19428792]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.86, 0.9, 1)
+theme_override_fonts/font = ExtResource("3_mech_font")
+theme_override_font_sizes/font_size = 20
+text = "SFX Volume"
+
+[node name="SfxSlider" type="HSlider" parent="OptionsModal/OptionsPanel/OptionsGrid" unique_id=1593178676]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+value = 80.0
+
+[node name="FullscreenLabel" type="Label" parent="OptionsModal/OptionsPanel/OptionsGrid" unique_id=1755839595]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.86, 0.9, 1)
+theme_override_fonts/font = ExtResource("3_mech_font")
+theme_override_font_sizes/font_size = 20
+text = "Fullscreen"
+
+[node name="FullscreenCheck" type="CheckBox" parent="OptionsModal/OptionsPanel/OptionsGrid" unique_id=2039034394]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="ResolutionLabel" type="Label" parent="OptionsModal/OptionsPanel/OptionsGrid" unique_id=972164250]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.86, 0.9, 1)
+theme_override_fonts/font = ExtResource("3_mech_font")
+theme_override_font_sizes/font_size = 20
+text = "Resolution"
+
+[node name="ResolutionOption" type="OptionButton" parent="OptionsModal/OptionsPanel/OptionsGrid" unique_id=979901839]
+custom_minimum_size = Vector2(250, 35)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("3_mech_font")
+theme_override_font_sizes/font_size = 18
+
+[node name="CloseButton" type="Button" parent="OptionsModal/OptionsPanel" unique_id=224347277]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -100.0
+offset_top = -75.0
+offset_right = 100.0
+offset_bottom = -25.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_focus_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_colors/font_hover_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_fonts/font = ExtResource("4_brush_font")
+theme_override_font_sizes/font_size = 24
+text = "CLOSE"
+flat = true

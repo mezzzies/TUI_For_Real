@@ -1,0 +1,75 @@
+[gd_scene format=3 uid="uid://cx6a2o7vkncyf"]
+
+[ext_resource type="Script" uid="uid://db4pgm6ncg1sr" path="res://script/example_test_card.gd" id="1_test"]
+
+[node name="TestCardScene" type="Control" unique_id=582424368]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_test")
+
+[node name="Background" type="ColorRect" parent="." unique_id=502891205]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.8809399, 0.89079785, 0.9148025, 1)
+
+[node name="HandContainer" type="Control" parent="." unique_id=759633507]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_top = -200.0
+offset_bottom = -200.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="ButtonContainer" type="HBoxContainer" parent="." unique_id=1610981270]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 30.0
+offset_right = 200.0
+offset_bottom = 70.0
+grow_horizontal = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="AddCardButton" type="Button" parent="ButtonContainer" unique_id=1503808787]
+custom_minimum_size = Vector2(140, 40)
+layout_mode = 2
+text = "ADD CARD"
+
+[node name="RemoveCardButton" type="Button" parent="ButtonContainer" unique_id=2040331954]
+custom_minimum_size = Vector2(140, 40)
+layout_mode = 2
+text = "REMOVE CARD"
+
+[node name="Instructions" type="Label" parent="." unique_id=1864291049]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -100.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.701961, 0.74902, 0.8, 1)
+theme_override_font_sizes/font_size = 15
+text = "THE BATTLE OF STICKIAN — CARD TEST SCENE
+• Hover cursor over the card to activate the 3D Perspective Tilt Shader.
+• Click the card to toggle selection highlights.
+• Click, hold, and drag the card around, then release it to snap back!"
+horizontal_alignment = 1
+vertical_alignment = 1

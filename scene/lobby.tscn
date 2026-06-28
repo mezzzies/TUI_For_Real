@@ -1,0 +1,153 @@
+[gd_scene format=3 uid="uid://c65j2o7vkncbb"]
+
+[ext_resource type="Script" uid="uid://dohj8fmqlb6yv" path="res://script/lobby.gd" id="1_lobby"]
+[ext_resource type="Texture2D" uid="uid://co6rxnh45i58w" path="res://asset/map_and_bg/background_mainmenu.jpg" id="2_bg"]
+[ext_resource type="FontFile" uid="uid://cjraayjdi4kb6" path="res://asset/font/big-scratch-brush-font/BigScratchBrush-PVY9g.ttf" id="3_brush_font"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_glass"]
+bg_color = Color(0.0666667, 0.0823529, 0.117647, 0.882353)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.247059, 0.27451, 0.352941, 0.588235)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.470588)
+shadow_size = 16
+
+[node name="LobbyScene" type="Control" unique_id=970957680]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lobby")
+
+[node name="Background" type="TextureRect" parent="." unique_id=371502780]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="UILayout" type="MarginContainer" parent="." unique_id=1632379706]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 80
+theme_override_constants/margin_top = 80
+theme_override_constants/margin_right = 80
+theme_override_constants/margin_bottom = 80
+
+[node name="CenterContainer" type="CenterContainer" parent="UILayout" unique_id=1372181454]
+layout_mode = 2
+
+[node name="LobbyCard" type="Panel" parent="UILayout/CenterContainer" unique_id=107350244]
+custom_minimum_size = Vector2(550, 480)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_glass")
+
+[node name="CardMargin" type="MarginContainer" parent="UILayout/CenterContainer/LobbyCard" unique_id=613420401]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UILayout/CenterContainer/LobbyCard/CardMargin" unique_id=273893875]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="LobbyTitle" type="Label" parent="UILayout/CenterContainer/LobbyCard/CardMargin/VBoxContainer" unique_id=1587858757]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_fonts/font = ExtResource("3_brush_font")
+theme_override_font_sizes/font_size = 48
+text = "GAME LOBBY"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="UILayout/CenterContainer/LobbyCard/CardMargin/VBoxContainer" unique_id=1859536217]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="ButtonsContainer" type="VBoxContainer" parent="UILayout/CenterContainer/LobbyCard/CardMargin/VBoxContainer" unique_id=1086004779]
+layout_mode = 2
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="StoryModeButton" type="Button" parent="UILayout/CenterContainer/LobbyCard/CardMargin/VBoxContainer/ButtonsContainer" unique_id=1859333099]
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_focus_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_colors/font_hover_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_fonts/font = ExtResource("3_brush_font")
+theme_override_font_sizes/font_size = 24
+text = "STORY MODE"
+flat = true
+
+[node name="PlayCallingButton" type="Button" parent="UILayout/CenterContainer/LobbyCard/CardMargin/VBoxContainer/ButtonsContainer" unique_id=334116947]
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_focus_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_colors/font_hover_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_fonts/font = ExtResource("3_brush_font")
+theme_override_font_sizes/font_size = 24
+text = "CALLING MODE"
+flat = true
+
+[node name="MassModeButton" type="Button" parent="UILayout/CenterContainer/LobbyCard/CardMargin/VBoxContainer/ButtonsContainer" unique_id=208577312]
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_focus_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_colors/font_hover_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_fonts/font = ExtResource("3_brush_font")
+theme_override_font_sizes/font_size = 24
+text = "MASS MODE"
+flat = true
+
+[node name="CustomizationButton" type="Button" parent="UILayout/CenterContainer/LobbyCard/CardMargin/VBoxContainer/ButtonsContainer" unique_id=367784352]
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_focus_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_colors/font_hover_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_fonts/font = ExtResource("3_brush_font")
+theme_override_font_sizes/font_size = 24
+text = "CUSTOMIZATION"
+flat = true
+
+[node name="BackButton" type="Button" parent="UILayout/CenterContainer/LobbyCard/CardMargin/VBoxContainer/ButtonsContainer" unique_id=774295257]
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_focus_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_colors/font_hover_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_fonts/font = ExtResource("3_brush_font")
+theme_override_font_sizes/font_size = 24
+text = "BACK TO MENU"
+flat = true

@@ -1,0 +1,161 @@
+[gd_scene format=3 uid="uid://cb5a2o7vkncye"]
+
+[ext_resource type="Script" uid="uid://bu2vndlbbiiwv" path="res://script/example_card.gd" id="1_c3r3d"]
+[ext_resource type="Shader" uid="uid://xbsggfuwpvuq" path="res://script/example_card.gdshader" id="2_gw1lc"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gw1lc"]
+shader = ExtResource("2_gw1lc")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_card"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_frame"]
+bg_color = Color(0.94275916, 0.94696516, 0.9607579, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.33, 0.4, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 4
+shadow_offset = Vector2(0, 2)
+
+[node name="Card" type="Control" unique_id=1228914272]
+custom_minimum_size = Vector2(150, 220)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 150.0
+offset_bottom = 220.0
+script = ExtResource("1_c3r3d")
+
+[node name="SubViewport" type="SubViewport" parent="."]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(150, 220)
+render_target_update_mode = 4
+
+[node name="CardContent" type="Control" parent="SubViewport"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Frame" type="Panel" parent="SubViewport/CardContent" unique_id=47315474]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_frame")
+
+[node name="Margin" type="MarginContainer" parent="SubViewport/CardContent" unique_id=1445267985]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="SubViewport/CardContent/Margin" unique_id=335419440]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Header" type="HBoxContainer" parent="SubViewport/CardContent/Margin/VBox" unique_id=1849645751]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Name" type="Label" parent="SubViewport/CardContent/Margin/VBox/Header" unique_id=1061183868]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 13
+text = "Card Name"
+clip_text = true
+
+[node name="Cost" type="Label" parent="SubViewport/CardContent/Margin/VBox/Header" unique_id=861510984]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784086, 0.44803262, 0.92889494, 1)
+theme_override_font_sizes/font_size = 14
+text = "0"
+horizontal_alignment = 2
+
+[node name="TypeLabel" type="Label" parent="SubViewport/CardContent/Margin/VBox" unique_id=2001117451]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.00662977, 0.008390067, 0.011185761, 1)
+theme_override_font_sizes/font_size = 9
+text = "UNIT"
+
+[node name="CardImage" type="Panel" parent="SubViewport/CardContent/Margin/VBox" unique_id=2145432818]
+custom_minimum_size = Vector2(0, 75)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Spacer" type="Control" parent="SubViewport/CardContent/Margin/VBox" unique_id=360138200]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Description" type="RichTextLabel" parent="SubViewport/CardContent/Margin/VBox" unique_id=1886340368]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.012443839, 0.014452234, 0.018037913, 1)
+theme_override_font_sizes/normal_font_size = 10
+text = "This is card description details text."
+scroll_active = false
+
+[node name="Stats" type="HBoxContainer" parent="SubViewport/CardContent/Margin/VBox" unique_id=922864058]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Atk" type="Label" parent="SubViewport/CardContent/Margin/VBox/Stats" unique_id=1478033716]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6637765, 0.021303922, 0.1409947, 1)
+theme_override_font_sizes/font_size = 11
+text = "ATK: 0"
+
+[node name="Spacer" type="Control" parent="SubViewport/CardContent/Margin/VBox/Stats" unique_id=496171788]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="Hp" type="Label" parent="SubViewport/CardContent/Margin/VBox/Stats" unique_id=724483397]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.05927337, 0.49291986, 0.18199149, 1)
+theme_override_font_sizes/font_size = 11
+text = "HP: 0"
+
+[node name="CardShadow" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_gw1lc")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("ViewportTexture_card")
+
+[node name="CardTexture" type="TextureRect" parent="." unique_id=1038139601]
+material = SubResource("ShaderMaterial_gw1lc")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("ViewportTexture_card")

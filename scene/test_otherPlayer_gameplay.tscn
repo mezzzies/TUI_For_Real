@@ -1,0 +1,567 @@
+[gd_scene format=3 uid="uid://j7qmb3jar7qh"]
+
+[ext_resource type="Script" uid="uid://dsc23e7yfn7ul" path="res://script/test_otherPlayer_gameplay.gd" id="1_hd2mv"]
+[ext_resource type="Texture2D" uid="uid://cf3pjknbc6i76" path="res://asset/map_and_bg/background_gameplay.jpg" id="2_xqos7"]
+[ext_resource type="Texture2D" uid="uid://s3wgjrn5tnn" path="res://asset/character/default/R_thinkinghand.png" id="3_xqos7"]
+[ext_resource type="Texture2D" uid="uid://bdy16vuov8q0j" path="res://asset/character/default/L_thinkinghand.png" id="4_tvx8q"]
+[ext_resource type="Texture2D" uid="uid://dbk74o6c8de58" path="res://asset/character/default/T_thinkinghand.png" id="5_ymemb"]
+
+[node name="TestOtherPlayerGameplay" type="Control" unique_id=681674429]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_hd2mv")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1785993854]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_xqos7")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="ResetButton" type="Button" parent="." unique_id=1973624286]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -160.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 60.0
+grow_horizontal = 0
+text = "Reset"
+
+[node name="Left_TableArea" type="Control" parent="." unique_id=11223344]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -109.487
+offset_top = -74.879974
+offset_right = 41.48297
+offset_bottom = 248.513
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 1.5707964
+
+[node name="TableSlot0" type="Control" parent="Left_TableArea" unique_id=1210094134]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -278.0
+offset_right = -8.0
+offset_bottom = -227.99991
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot1" type="Control" parent="Left_TableArea" unique_id=1713726023]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -278.0
+offset_right = 52.0
+offset_bottom = -227.99988
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot2" type="Control" parent="Left_TableArea" unique_id=753241771]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -217.99998
+offset_right = -8.0
+offset_bottom = -167.99997
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot3" type="Control" parent="Left_TableArea" unique_id=1356379897]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -217.99998
+offset_right = 52.0
+offset_bottom = -167.99997
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot4" type="Control" parent="Left_TableArea" unique_id=1831802068]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -159.00003
+offset_right = -8.0
+offset_bottom = -109.00003
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot5" type="Control" parent="Left_TableArea" unique_id=974639180]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -158.99997
+offset_right = 52.0
+offset_bottom = -108.99997
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot6" type="Control" parent="Left_TableArea" unique_id=755144183]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -99.00003
+offset_right = -8.0
+offset_bottom = -49.00003
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot7" type="Control" parent="Left_TableArea" unique_id=805213044]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -99.00003
+offset_right = 52.0
+offset_bottom = -49.00003
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="Right_TableArea" type="Control" parent="." unique_id=151341557]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 114.804016
+offset_top = 76.120026
+offset_right = 265.774
+offset_bottom = 390.19598
+grow_horizontal = 2
+grow_vertical = 2
+rotation = -1.5707964
+
+[node name="TableSlot0" type="Control" parent="Right_TableArea" unique_id=22288926]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -278.0
+offset_right = -8.0
+offset_bottom = -227.99997
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot1" type="Control" parent="Right_TableArea" unique_id=609047095]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -278.0
+offset_right = 52.0
+offset_bottom = -227.99994
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot2" type="Control" parent="Right_TableArea" unique_id=921826144]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -217.99998
+offset_right = -8.0
+offset_bottom = -167.99997
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot3" type="Control" parent="Right_TableArea" unique_id=933239679]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -217.99998
+offset_right = 52.0
+offset_bottom = -167.99997
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot4" type="Control" parent="Right_TableArea" unique_id=251654271]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -159.00003
+offset_right = -8.0
+offset_bottom = -109.00003
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot5" type="Control" parent="Right_TableArea" unique_id=1714007193]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -158.99997
+offset_right = 52.0
+offset_bottom = -108.99997
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot6" type="Control" parent="Right_TableArea" unique_id=843045328]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -99.00003
+offset_right = -8.0
+offset_bottom = -49.00003
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot7" type="Control" parent="Right_TableArea" unique_id=1959070927]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -99.00003
+offset_right = 52.0
+offset_bottom = -49.00003
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="Top_TableArea" type="Control" parent="." unique_id=589417176]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 82.859985
+offset_top = -2.3923645
+offset_right = 248.47083
+offset_bottom = 245.1502
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 3.1415927
+
+[node name="TableSlot0" type="Control" parent="Top_TableArea" unique_id=362560135]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -235.0
+offset_right = -8.0
+offset_bottom = -184.99997
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot1" type="Control" parent="Top_TableArea" unique_id=1836682361]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -235.0
+offset_right = 52.0
+offset_bottom = -184.99994
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot2" type="Control" parent="Top_TableArea" unique_id=487478591]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -174.99998
+offset_right = -8.0
+offset_bottom = -124.99997
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot3" type="Control" parent="Top_TableArea" unique_id=1007830531]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -174.99998
+offset_right = 52.0
+offset_bottom = -124.99997
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot4" type="Control" parent="Top_TableArea" unique_id=672911250]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -116.00003
+offset_right = -8.0
+offset_bottom = -66.00003
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot5" type="Control" parent="Top_TableArea" unique_id=140939376]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -115.99997
+offset_right = 52.0
+offset_bottom = -65.99997
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot6" type="Control" parent="Top_TableArea" unique_id=2136684466]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -56.00003
+offset_right = -8.0
+offset_bottom = -6.0000305
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot7" type="Control" parent="Top_TableArea" unique_id=873387028]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -56.00003
+offset_right = 52.0
+offset_bottom = -6.0000305
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="ConfirmButton" type="Button" parent="." unique_id=55667788]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -180.0
+offset_top = -70.0
+offset_right = -30.0
+offset_bottom = -30.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Confirm"
+
+[node name="Right_Player" type="TextureRect" parent="." unique_id=84342882]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 168.83002
+offset_top = 301.0
+offset_right = 768.8301
+offset_bottom = 743.1699
+grow_horizontal = 2
+grow_vertical = 2
+rotation = -1.5707964
+texture = ExtResource("3_xqos7")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Left_Player" type="TextureRect" parent="." unique_id=543143440]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -162.94592
+offset_top = -298.0
+offset_right = 437.05408
+offset_bottom = 157.05408
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 1.5707964
+texture = ExtResource("4_tvx8q")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Top_Player" type="TextureRect" parent="." unique_id=1660289175]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 300.0
+offset_top = 81.16998
+offset_right = 900.0
+offset_bottom = 523.33997
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 3.1415927
+texture = ExtResource("5_ymemb")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LeftReadyButton" type="Button" parent="." unique_id=112211]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 20.0
+offset_top = 150.0
+offset_right = 160.0
+offset_bottom = 190.0
+grow_vertical = 2
+text = "Left Ready"
+
+[node name="RightReadyButton" type="Button" parent="." unique_id=223322]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = 150.0
+offset_right = -20.0
+offset_bottom = 190.0
+grow_horizontal = 0
+grow_vertical = 2
+text = "Right Ready"
+
+[node name="TopReadyButton" type="Button" parent="." unique_id=334433]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -70.0
+offset_top = 220.0
+offset_right = 70.0
+offset_bottom = 260.0
+grow_horizontal = 2
+text = "Top Ready"
+
+[node name="PlayTypeLabel" type="Label" parent="." unique_id=445544]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 180.0
+offset_bottom = 46.0
+text = "Select Play Type:"
+
+[node name="PlayTypeButton" type="OptionButton" parent="." unique_id=556655]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 50.0
+offset_right = 180.0
+offset_bottom = 81.0

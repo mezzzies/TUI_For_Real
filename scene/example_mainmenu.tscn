@@ -1,0 +1,266 @@
+[gd_scene format=3 uid="uid://b2xc34g60c7hj"]
+
+[ext_resource type="Script" uid="uid://c2pxd0ao0fqei" path="res://script/example_mainmenu.gd" id="1_r4x2y"]
+[ext_resource type="AudioStream" uid="uid://bquw20k8ailb" path="res://asset/music/Poker Table – Royalty Free Blues Music [No Copyright Music].mp3" id="2_music"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.0823529, 0.0901961, 0.117647, 1)
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_r4x2y")
+
+[node name="Background" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
+
+[node name="BackgroundMusic" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_music")
+autoplay = true
+
+[node name="UILayout" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 80
+theme_override_constants/margin_top = 80
+theme_override_constants/margin_right = 80
+theme_override_constants/margin_bottom = 80
+
+[node name="MenuScreen" type="VBoxContainer" parent="UILayout"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="TitleContainer" type="VBoxContainer" parent="UILayout/MenuScreen"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="GameTitle" type="Label" parent="UILayout/MenuScreen/TitleContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_font_sizes/font_size = 54
+text = "THE BATTLE OF STICKIAN"
+vertical_alignment = 1
+
+[node name="GameSubtitle" type="Label" parent="UILayout/MenuScreen/TitleContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.588235, 0.615686, 0.666667, 1)
+theme_override_font_sizes/font_size = 20
+text = "TACTICAL STICKMAN WARFARE SIMULATOR"
+vertical_alignment = 1
+
+[node name="Spacer" type="Control" parent="UILayout/MenuScreen"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="ButtonsContainer" type="VBoxContainer" parent="UILayout/MenuScreen"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="PlayButton" type="Button" parent="UILayout/MenuScreen/ButtonsContainer"]
+custom_minimum_size = Vector2(250, 50)
+layout_mode = 2
+size_flags_horizontal = 0
+focus_neighbor_bottom = NodePath("../OptionsButton")
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_focus_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_colors/font_hover_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_font_sizes/font_size = 22
+text = "PLAY GAME"
+flat = true
+alignment = 0
+
+[node name="OptionsButton" type="Button" parent="UILayout/MenuScreen/ButtonsContainer"]
+custom_minimum_size = Vector2(250, 50)
+layout_mode = 2
+size_flags_horizontal = 0
+focus_neighbor_top = NodePath("../PlayButton")
+focus_neighbor_bottom = NodePath("../CreditsButton")
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_focus_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_colors/font_hover_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_font_sizes/font_size = 22
+text = "OPTIONS"
+flat = true
+alignment = 0
+
+[node name="CreditsButton" type="Button" parent="UILayout/MenuScreen/ButtonsContainer"]
+custom_minimum_size = Vector2(250, 50)
+layout_mode = 2
+size_flags_horizontal = 0
+focus_neighbor_top = NodePath("../OptionsButton")
+focus_neighbor_bottom = NodePath("../ExitButton")
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_focus_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_colors/font_hover_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_font_sizes/font_size = 22
+text = "CREDITS"
+flat = true
+alignment = 0
+
+[node name="ExitButton" type="Button" parent="UILayout/MenuScreen/ButtonsContainer"]
+custom_minimum_size = Vector2(250, 50)
+layout_mode = 2
+size_flags_horizontal = 0
+focus_neighbor_top = NodePath("../CreditsButton")
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_focus_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_colors/font_hover_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_font_sizes/font_size = 22
+text = "EXIT GAME"
+flat = true
+alignment = 0
+
+[node name="Spacer2" type="Control" parent="UILayout/MenuScreen"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Footer" type="Label" parent="UILayout/MenuScreen"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.42, 0.48, 1)
+theme_override_font_sizes/font_size = 14
+text = "v0.1.0 - Alpha"
+vertical_alignment = 2
+
+[node name="OptionsScreen" type="VBoxContainer" parent="UILayout"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="UILayout/OptionsScreen"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_font_sizes/font_size = 40
+text = "OPTIONS"
+vertical_alignment = 1
+
+[node name="Spacer" type="Control" parent="UILayout/OptionsScreen"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="OptionsGrid" type="GridContainer" parent="UILayout/OptionsScreen"]
+layout_mode = 2
+theme_override_constants/h_separation = 40
+theme_override_constants/v_separation = 20
+columns = 2
+
+[node name="VolumeLabel" type="Label" parent="UILayout/OptionsScreen/OptionsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Master Volume"
+
+[node name="VolumeSlider" type="HSlider" parent="UILayout/OptionsScreen/OptionsGrid"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_vertical = 4
+value = 80.0
+
+[node name="MusicLabel" type="Label" parent="UILayout/OptionsScreen/OptionsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Music Volume"
+
+[node name="MusicSlider" type="HSlider" parent="UILayout/OptionsScreen/OptionsGrid"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_vertical = 4
+value = 70.0
+
+[node name="FullscreenLabel" type="Label" parent="UILayout/OptionsScreen/OptionsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Fullscreen"
+
+[node name="FullscreenCheck" type="CheckBox" parent="UILayout/OptionsScreen/OptionsGrid"]
+layout_mode = 2
+
+[node name="ResolutionLabel" type="Label" parent="UILayout/OptionsScreen/OptionsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Resolution"
+
+[node name="ResolutionOption" type="OptionButton" parent="UILayout/OptionsScreen/OptionsGrid"]
+custom_minimum_size = Vector2(300, 40)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Spacer2" type="Control" parent="UILayout/OptionsScreen"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="OptionsBackButton" type="Button" parent="UILayout/OptionsScreen"]
+custom_minimum_size = Vector2(250, 50)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_focus_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_colors/font_hover_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_font_sizes/font_size = 22
+text = "BACK TO MENU"
+flat = true
+alignment = 0
+
+[node name="CreditsScreen" type="VBoxContainer" parent="UILayout"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="UILayout/CreditsScreen"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_font_sizes/font_size = 40
+text = "CREDITS"
+vertical_alignment = 1
+
+[node name="Spacer" type="Control" parent="UILayout/CreditsScreen"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="CreditsText" type="RichTextLabel" parent="UILayout/CreditsScreen"]
+custom_minimum_size = Vector2(600, 250)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/default_color = Color(0.8, 0.82, 0.86, 1)
+theme_override_font_sizes/normal_font_size = 18
+bbcode_enabled = true
+text = "[b]THE BATTLE OF STICKIAN[/b]
+
+[color=#b0b2b8]Development & Design:[/color]
+Stickian Team
+
+[color=#b0b2b8]Engine:[/color]
+Godot Engine 4.6 (GL Compatibility)
+
+[color=#b0b2b8]Physics:[/color]
+Jolt Physics
+
+Thank you for playing!"
+
+[node name="Spacer2" type="Control" parent="UILayout/CreditsScreen"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CreditsBackButton" type="Button" parent="UILayout/CreditsScreen"]
+custom_minimum_size = Vector2(250, 50)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_focus_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_colors/font_hover_color = Color(0.952941, 0.764706, 0.231373, 1)
+theme_override_font_sizes/font_size = 22
+text = "BACK TO MENU"
+flat = true
+alignment = 0

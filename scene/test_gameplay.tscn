@@ -1,0 +1,1525 @@
+[gd_scene format=3 uid="uid://bquw20k8ailc"]
+
+[ext_resource type="Script" uid="uid://b1xsoylxxggkm" path="res://script/test_gameplay.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://bfovuj6cmpe8" path="res://asset/map_and_bg/Gameplay_BG.png" id="2_h3sfi"]
+[ext_resource type="Texture2D" uid="uid://b7g2p7t8q5hyi" path="res://asset/character/default/fronthand.png" id="3_fronthand"]
+[ext_resource type="Texture2D" uid="uid://cmn2gp1p1kah2" path="res://asset/character/default/Single_backhand.png" id="4_backhand"]
+[ext_resource type="Texture2D" uid="uid://s3wgjrn5tnn" path="res://asset/character/default/R_thinkinghand.png" id="5_r_thinkinghand"]
+[ext_resource type="Texture2D" uid="uid://bdy16vuov8q0j" path="res://asset/character/default/L_thinkinghand.png" id="6_l_thinkinghand"]
+[ext_resource type="Texture2D" uid="uid://dbk74o6c8de58" path="res://asset/character/default/T_thinkinghand.png" id="7_t_thinkinghand"]
+[ext_resource type="Texture2D" uid="uid://cu3aex2h4u8iu" path="res://asset/card/default/Backcard.png" id="8_w3vae"]
+[ext_resource type="Texture2D" uid="uid://8ooct8qhcqw" path="res://asset/util/announcement_background.png" id="9_mgwm7"]
+
+[node name="TestGameplay" type="Control" unique_id=681674429]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1785993854]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_h3sfi")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="HandArea" type="Control" parent="." unique_id=742485722]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -394.0
+offset_top = -253.0
+offset_right = 394.0
+offset_bottom = 62.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="PlayerHand" type="TextureRect" parent="HandArea" unique_id=648395574]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_fronthand")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CardSlot0" type="Control" parent="HandArea" unique_id=2073010140]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -111.0
+offset_top = -303.0
+offset_right = -41.0
+offset_bottom = -233.0
+grow_horizontal = 2
+grow_vertical = 0
+rotation = -0.3
+pivot_offset = Vector2(35, 70)
+
+[node name="CardSlot1" type="Control" parent="HandArea" unique_id=1070070923]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -144.0
+offset_top = -224.0
+offset_right = -74.0
+offset_bottom = -154.0
+grow_horizontal = 2
+grow_vertical = 0
+rotation = -0.15
+pivot_offset = Vector2(35, 70)
+
+[node name="CardSlot2" type="Control" parent="HandArea" unique_id=230391271]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -98.0
+offset_top = -243.0
+offset_right = -30.0
+offset_bottom = -173.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="CardSlot3" type="Control" parent="HandArea" unique_id=113130682]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -90.0
+offset_top = -187.0
+offset_right = -20.0
+offset_bottom = -117.0
+grow_horizontal = 2
+grow_vertical = 0
+rotation = 0.15
+pivot_offset = Vector2(35, 70)
+
+[node name="CardSlot4" type="Control" parent="HandArea" unique_id=545193246]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 82.0
+offset_top = -296.0
+offset_right = 152.0
+offset_bottom = -226.0
+grow_horizontal = 2
+grow_vertical = 0
+rotation = -0.15
+pivot_offset = Vector2(35, 70)
+
+[node name="CardSlot5" type="Control" parent="HandArea" unique_id=1610190006]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 100.0
+offset_top = -216.0
+offset_right = 170.0
+offset_bottom = -146.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="CardSlot6" type="Control" parent="HandArea" unique_id=84770209]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 42.0
+offset_top = -240.0
+offset_right = 112.0
+offset_bottom = -170.0
+grow_horizontal = 2
+grow_vertical = 0
+rotation = 0.15
+pivot_offset = Vector2(35, 70)
+
+[node name="CardSlot7" type="Control" parent="HandArea" unique_id=1892513125]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 25.0
+offset_top = -185.0
+offset_right = 95.0
+offset_bottom = -115.0
+grow_horizontal = 2
+grow_vertical = 0
+rotation = 0.3
+pivot_offset = Vector2(35, 70)
+
+[node name="TableArea" type="Control" parent="." unique_id=11223344]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -161.0
+offset_top = 14.0
+offset_right = 163.0
+offset_bottom = 164.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TableSlot0" type="Control" parent="TableArea" unique_id=1210094134]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -62.0
+offset_top = -89.0
+offset_right = -12.0
+offset_bottom = -39.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot1" type="Control" parent="TableArea" unique_id=1713726023]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -2.0
+offset_top = -89.0
+offset_right = 48.0
+offset_bottom = -39.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot2" type="Control" parent="TableArea" unique_id=753241771]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -62.0
+offset_top = -30.0
+offset_right = -12.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot3" type="Control" parent="TableArea" unique_id=1356379897]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -2.0
+offset_top = -30.0
+offset_right = 48.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot4" type="Control" parent="TableArea" unique_id=1831802068]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -62.0
+offset_top = -149.0
+offset_right = -12.0
+offset_bottom = -99.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot5" type="Control" parent="TableArea" unique_id=974639180]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -2.0
+offset_top = -149.0
+offset_right = 48.0
+offset_bottom = -99.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot6" type="Control" parent="TableArea" unique_id=755144183]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -62.0
+offset_top = 30.0
+offset_right = -12.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot7" type="Control" parent="TableArea" unique_id=805213044]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -2.0
+offset_top = 30.0
+offset_right = 48.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="Left_TableArea" type="Control" parent="." unique_id=615300665]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -109.0
+offset_top = -75.0
+offset_right = 41.0
+offset_bottom = 249.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 1.5707964
+
+[node name="TableSlot0" type="Control" parent="Left_TableArea" unique_id=108500008]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -218.0
+offset_right = -8.0
+offset_bottom = -168.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot1" type="Control" parent="Left_TableArea" unique_id=774949998]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -218.0
+offset_right = 52.0
+offset_bottom = -168.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot2" type="Control" parent="Left_TableArea" unique_id=1583003986]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -159.0
+offset_right = -8.0
+offset_bottom = -109.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot3" type="Control" parent="Left_TableArea" unique_id=990678761]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -159.0
+offset_right = 52.0
+offset_bottom = -109.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot4" type="Control" parent="Left_TableArea" unique_id=1301566238]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -278.0
+offset_right = -8.0
+offset_bottom = -228.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot5" type="Control" parent="Left_TableArea" unique_id=1859111797]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -278.0
+offset_right = 52.0
+offset_bottom = -228.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot6" type="Control" parent="Left_TableArea" unique_id=881007400]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -99.0
+offset_right = -8.0
+offset_bottom = -49.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot7" type="Control" parent="Left_TableArea" unique_id=256495095]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -99.0
+offset_right = 52.0
+offset_bottom = -49.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="Right_TableArea" type="Control" parent="." unique_id=151341557]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 115.0
+offset_top = 76.0
+offset_right = 266.0
+offset_bottom = 390.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = -1.5707964
+
+[node name="TableSlot0" type="Control" parent="Right_TableArea" unique_id=22288926]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -218.0
+offset_right = -8.0
+offset_bottom = -168.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot1" type="Control" parent="Right_TableArea" unique_id=609047095]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -218.0
+offset_right = 52.0
+offset_bottom = -168.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot2" type="Control" parent="Right_TableArea" unique_id=921826144]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -159.0
+offset_right = -8.0
+offset_bottom = -109.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot3" type="Control" parent="Right_TableArea" unique_id=933239679]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -159.0
+offset_right = 52.0
+offset_bottom = -109.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot4" type="Control" parent="Right_TableArea" unique_id=251654271]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -278.0
+offset_right = -8.0
+offset_bottom = -228.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot5" type="Control" parent="Right_TableArea" unique_id=1714007193]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -278.0
+offset_right = 52.0
+offset_bottom = -228.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot6" type="Control" parent="Right_TableArea" unique_id=843045328]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -99.0
+offset_right = -8.0
+offset_bottom = -49.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot7" type="Control" parent="Right_TableArea" unique_id=1959070927]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -99.0
+offset_right = 52.0
+offset_bottom = -49.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="Top_TableArea" type="Control" parent="." unique_id=589417176]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 83.0
+offset_top = -2.0
+offset_right = 248.0
+offset_bottom = 245.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 3.1415927
+
+[node name="TableSlot0" type="Control" parent="Top_TableArea" unique_id=362560135]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -175.0
+offset_right = -8.0
+offset_bottom = -125.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot1" type="Control" parent="Top_TableArea" unique_id=1836682361]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -175.0
+offset_right = 52.0
+offset_bottom = -125.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot2" type="Control" parent="Top_TableArea" unique_id=487478591]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -116.0
+offset_right = -8.0
+offset_bottom = -66.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot3" type="Control" parent="Top_TableArea" unique_id=1007830531]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -116.0
+offset_right = 52.0
+offset_bottom = -66.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot4" type="Control" parent="Top_TableArea" unique_id=672911250]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -235.0
+offset_right = -8.0
+offset_bottom = -185.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot5" type="Control" parent="Top_TableArea" unique_id=140939376]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -235.0
+offset_right = 52.0
+offset_bottom = -185.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot6" type="Control" parent="Top_TableArea" unique_id=2136684466]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -56.0
+offset_right = -8.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="TableSlot7" type="Control" parent="Top_TableArea" unique_id=873387028]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -56.0
+offset_right = 52.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 70)
+
+[node name="Right_Player" type="TextureRect" parent="." unique_id=84342882]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 169.0
+offset_top = 301.0
+offset_right = 769.0
+offset_bottom = 743.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = -1.5707964
+texture = ExtResource("5_r_thinkinghand")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Left_Player" type="TextureRect" parent="." unique_id=543143440]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -163.0
+offset_top = -298.0
+offset_right = 437.0
+offset_bottom = 157.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 1.5707964
+texture = ExtResource("6_l_thinkinghand")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Top_Player" type="TextureRect" parent="." unique_id=1660289175]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 300.0
+offset_top = 81.0
+offset_right = 900.0
+offset_bottom = 523.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 3.1415927
+texture = ExtResource("7_t_thinkinghand")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BackHand" type="TextureRect" parent="." unique_id=99887766]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -48.0
+offset_right = 300.0
+offset_bottom = 552.0
+grow_horizontal = 2
+grow_vertical = 0
+texture = ExtResource("4_backhand")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PlayerWinArea" type="Control" parent="." unique_id=1498255461]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 187.0
+offset_top = 94.0
+offset_right = 365.0
+offset_bottom = 303.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CardIcon_1" type="TextureRect" parent="PlayerWinArea" unique_id=2070436040]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.12359542
+anchor_top = 0.68899524
+anchor_right = 0.4044943
+anchor_bottom = 0.9282297
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_2" type="TextureRect" parent="PlayerWinArea" unique_id=1165584698]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.41011226
+anchor_top = 0.68899524
+anchor_right = 0.69101125
+anchor_bottom = 0.9282297
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_3" type="TextureRect" parent="PlayerWinArea" unique_id=764226737]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.69101113
+anchor_top = 0.6937799
+anchor_right = 0.97191
+anchor_bottom = 0.93301433
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_4" type="TextureRect" parent="PlayerWinArea" unique_id=727787447]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.12359542
+anchor_top = 0.444976
+anchor_right = 0.4044943
+anchor_bottom = 0.6842105
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_5" type="TextureRect" parent="PlayerWinArea" unique_id=1494623048]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.41011226
+anchor_top = 0.4401914
+anchor_right = 0.69101113
+anchor_bottom = 0.67942584
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_6" type="TextureRect" parent="PlayerWinArea" unique_id=865060035]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.7022471
+anchor_top = 0.444976
+anchor_right = 0.9831459
+anchor_bottom = 0.6842105
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_7" type="TextureRect" parent="PlayerWinArea" unique_id=1135865589]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.26404485
+anchor_top = 0.22009562
+anchor_right = 0.54494375
+anchor_bottom = 0.45933008
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_8" type="TextureRect" parent="PlayerWinArea" unique_id=1257369619]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5617977
+anchor_top = 0.22009562
+anchor_right = 0.84269655
+anchor_bottom = 0.45933008
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="TopWinArea" type="Control" parent="." unique_id=1328064028]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -181.0
+offset_top = -111.0
+offset_right = -3.0
+offset_bottom = 98.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 3.1415927
+
+[node name="CardIcon_1" type="TextureRect" parent="TopWinArea" unique_id=1959484827]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.12359542
+anchor_top = 0.68899524
+anchor_right = 0.4044943
+anchor_bottom = 0.9282297
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_2" type="TextureRect" parent="TopWinArea" unique_id=932008040]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.41011226
+anchor_top = 0.68899524
+anchor_right = 0.69101125
+anchor_bottom = 0.9282297
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_3" type="TextureRect" parent="TopWinArea" unique_id=450357080]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.69101113
+anchor_top = 0.6937799
+anchor_right = 0.97191
+anchor_bottom = 0.93301433
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_4" type="TextureRect" parent="TopWinArea" unique_id=1753555048]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.12359542
+anchor_top = 0.444976
+anchor_right = 0.4044943
+anchor_bottom = 0.6842105
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_5" type="TextureRect" parent="TopWinArea" unique_id=1441271427]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.41011226
+anchor_top = 0.4401914
+anchor_right = 0.69101113
+anchor_bottom = 0.67942584
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_6" type="TextureRect" parent="TopWinArea" unique_id=1494994088]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.7022471
+anchor_top = 0.444976
+anchor_right = 0.9831459
+anchor_bottom = 0.6842105
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_7" type="TextureRect" parent="TopWinArea" unique_id=2031886604]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.26404485
+anchor_top = 0.22009562
+anchor_right = 0.54494375
+anchor_bottom = 0.45933008
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_8" type="TextureRect" parent="TopWinArea" unique_id=1089880680]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5617977
+anchor_top = 0.22009562
+anchor_right = 0.84269655
+anchor_bottom = 0.45933008
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="LeftWinArea" type="Control" parent="." unique_id=1456541654]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -352.0
+offset_top = 137.0
+offset_right = -174.0
+offset_bottom = 346.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 1.5707964
+
+[node name="CardIcon_1" type="TextureRect" parent="LeftWinArea" unique_id=904239355]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.12359542
+anchor_top = 0.68899524
+anchor_right = 0.4044943
+anchor_bottom = 0.9282297
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_2" type="TextureRect" parent="LeftWinArea" unique_id=1206227963]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.41011226
+anchor_top = 0.68899524
+anchor_right = 0.69101125
+anchor_bottom = 0.9282297
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_3" type="TextureRect" parent="LeftWinArea" unique_id=1649285547]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.69101113
+anchor_top = 0.6937799
+anchor_right = 0.97191
+anchor_bottom = 0.93301433
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_4" type="TextureRect" parent="LeftWinArea" unique_id=1357204550]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.12359542
+anchor_top = 0.444976
+anchor_right = 0.4044943
+anchor_bottom = 0.6842105
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_5" type="TextureRect" parent="LeftWinArea" unique_id=1061787809]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.41011226
+anchor_top = 0.4401914
+anchor_right = 0.69101113
+anchor_bottom = 0.67942584
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_6" type="TextureRect" parent="LeftWinArea" unique_id=1905015503]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.7022471
+anchor_top = 0.444976
+anchor_right = 0.9831459
+anchor_bottom = 0.6842105
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_7" type="TextureRect" parent="LeftWinArea" unique_id=236664700]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.26404485
+anchor_top = 0.22009562
+anchor_right = 0.54494375
+anchor_bottom = 0.45933008
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_8" type="TextureRect" parent="LeftWinArea" unique_id=1500918144]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5617977
+anchor_top = 0.22009562
+anchor_right = 0.84269655
+anchor_bottom = 0.45933008
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="RightWinArea" type="Control" parent="." unique_id=865221473]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 341.0
+offset_top = -121.0
+offset_right = 519.0
+offset_bottom = 88.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 4.712389
+
+[node name="CardIcon_1" type="TextureRect" parent="RightWinArea" unique_id=1622635568]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.12359542
+anchor_top = 0.68899524
+anchor_right = 0.4044943
+anchor_bottom = 0.9282297
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_2" type="TextureRect" parent="RightWinArea" unique_id=1173633760]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.41011226
+anchor_top = 0.68899524
+anchor_right = 0.69101125
+anchor_bottom = 0.9282297
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_3" type="TextureRect" parent="RightWinArea" unique_id=755972139]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.69101113
+anchor_top = 0.6937799
+anchor_right = 0.97191
+anchor_bottom = 0.93301433
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_4" type="TextureRect" parent="RightWinArea" unique_id=1835238080]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.12359542
+anchor_top = 0.444976
+anchor_right = 0.4044943
+anchor_bottom = 0.6842105
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_5" type="TextureRect" parent="RightWinArea" unique_id=232905749]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.41011226
+anchor_top = 0.4401914
+anchor_right = 0.69101113
+anchor_bottom = 0.67942584
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_6" type="TextureRect" parent="RightWinArea" unique_id=1329918674]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.7022471
+anchor_top = 0.444976
+anchor_right = 0.9831459
+anchor_bottom = 0.6842105
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_7" type="TextureRect" parent="RightWinArea" unique_id=42707542]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.26404485
+anchor_top = 0.22009562
+anchor_right = 0.54494375
+anchor_bottom = 0.45933008
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="CardIcon_8" type="TextureRect" parent="RightWinArea" unique_id=304635856]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5617977
+anchor_top = 0.22009562
+anchor_right = 0.84269655
+anchor_bottom = 0.45933008
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_w3vae")
+expand_mode = 1
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="GetCardsButton" type="Button" parent="." unique_id=1973624286]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -96.0
+offset_top = 54.0
+offset_right = -14.0
+offset_bottom = 94.0
+grow_horizontal = 0
+text = "Get cards"
+
+[node name="ResetButton" type="Button" parent="." unique_id=-1321343010]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -96.0
+offset_top = 12.0
+offset_right = -14.0
+offset_bottom = 52.0
+grow_horizontal = 0
+text = "Reset"
+
+[node name="LeftReadyButton" type="Button" parent="." unique_id=112211]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 213.0
+offset_top = -13.0
+offset_right = 353.0
+offset_bottom = 27.0
+grow_vertical = 2
+text = "Left Ready"
+
+[node name="RightReadyButton" type="Button" parent="." unique_id=223322]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -368.0
+offset_top = -9.0
+offset_right = -228.0
+offset_bottom = 31.0
+grow_horizontal = 0
+grow_vertical = 2
+text = "Right Ready"
+
+[node name="TopReadyButton" type="Button" parent="." unique_id=334433]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -70.0
+offset_top = 220.0
+offset_right = 70.0
+offset_bottom = 260.0
+grow_horizontal = 2
+text = "Top Ready"
+
+[node name="ConfirmButton" type="Button" parent="." unique_id=55667788]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -180.0
+offset_top = -70.0
+offset_right = -30.0
+offset_bottom = -30.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Confirm"
+
+[node name="Annoucement" type="Control" parent="." unique_id=720675827]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="AnnoucementBG" type="TextureRect" parent="Annoucement" unique_id=1415676385]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -384.56763
+offset_top = -123.0
+offset_right = 384.56763
+offset_bottom = 123.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("9_mgwm7")
+expand_mode = 1
+
+[node name="AnnoucementText" type="Label" parent="Annoucement" unique_id=1894024479]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -137.0
+offset_top = -28.5
+offset_right = 137.0
+offset_bottom = 28.5
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlayerName" type="Label" parent="." unique_id=913954724]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -91.0
+offset_top = -36.0
+offset_right = 91.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 16
+text = "Player Name"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LeftName" type="Label" parent="." unique_id=2104706098]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 38.884098
+offset_top = -80.64145
+offset_right = 218.8841
+offset_bottom = -45.64145
+grow_vertical = 2
+rotation = 1.5707964
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 16
+text = "Left Name"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TopName" type="Label" parent="." unique_id=847050897]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -105.0
+offset_right = 78.0
+offset_bottom = 36.0
+grow_horizontal = 2
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 16
+text = "Top Name"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RightName" type="Label" parent="." unique_id=1534313487]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -39.0
+offset_top = 99.0
+offset_right = 141.0
+offset_bottom = 134.0
+grow_horizontal = 0
+grow_vertical = 2
+rotation = -1.5707964
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 16
+text = "Right Name"
+horizontal_alignment = 1
+vertical_alignment = 1

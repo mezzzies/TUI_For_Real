@@ -1409,6 +1409,7 @@ grow_vertical = 0
 text = "Confirm"
 
 [node name="Annoucement" type="Control" parent="." unique_id=720675827]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -1523,3 +1524,57 @@ theme_override_font_sizes/font_size = 16
 text = "Right Name"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Time" type="Label" parent="." unique_id=1539467753]
+layout_mode = 1
+offset_right = 182.0
+offset_bottom = 36.0
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 30
+text = "Time: 00"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScorePanel" type="ColorRect" parent="." unique_id=1948572013]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = -180.0
+offset_right = 340.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.09, 0.12, 0.94)
+
+[node name="ScoreContainer" type="VBoxContainer" parent="ScorePanel" unique_id=1948572014]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = 30.0
+offset_right = -30.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+
+[node name="TitleLabel" type="Label" parent="ScorePanel/ScoreContainer" unique_id=1948572015]
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 32
+text = "MATCH SCOREBOARD"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScoreGrid" type="GridContainer" parent="ScorePanel/ScoreContainer" unique_id=1948572016]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/h_separation = 46
+theme_override_constants/v_separation = 23
+columns = 6

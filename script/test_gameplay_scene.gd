@@ -20,6 +20,9 @@ func run_tests():
 		quit(1)
 		return
 		
+	# Disable state timers during headless testing
+	gameplay.is_test_mode = true
+		
 	# Add to tree so onready and _ready are called
 	root.add_child(gameplay)
 	
@@ -48,6 +51,9 @@ func run_basic_checks(gameplay):
 	assert(gameplay.confirm_button != null, "confirm_button must exist")
 	assert(gameplay.announcement != null, "announcement overlay must exist")
 	assert(gameplay.announcement_text != null, "announcement_text label must exist")
+	assert(gameplay.time_label != null, "time_label must exist")
+	assert(gameplay.score_panel != null, "score_panel must exist")
+	assert(gameplay.score_grid != null, "score_grid must exist")
 	print("Basic checks passed.")
 
 func run_deal_checks(gameplay):
@@ -230,3 +236,36 @@ func run_winner_logic_checks(gameplay):
 	assert(respond_pair[0]["id"].begins_with("R_3Elephant") and respond_pair[1]["id"].begins_with("R_3Elephant"), "Should play the saved pair")
 	
 	print("Winner determination scenarios passed.")
+	
+	run_timer_timeout_checks(gameplay)
+
+
+func run_timer_timeout_checks(gameplay):
+	print("Testing timer timeout and auto-play triggers...")
+	
+	# Setup Player hand and Leader state
+	gameplay.current_leader = 0
+	gameplay.active_play_type = ""
+	gameplay.active_card_count = 0
+	gameplay.has_played = [false, false, false, false]
+	gameplay.player_hand = [{"id": "R_1King", "rank": 1, "color": "R", "texture_path": "res://asset/card/default/TuiSkin_R_1King.png"}]
+	
+	# Add a card node to slot0 to represent Player's hand card
+	for child in gameplay.slots[0].get_children():
+		gameplay.slots[0].remove_child(child)
+		child.queue_free()
+	var card_node = load("res://scene/test_card.tscn").instantiate()
+	gameplay.slots[0].add_child(card_node)
+	card_node.setup_card("res://asset/card/default/TuiSkin_R_1King.png")
+	card_node.set_meta("card_id", "R_1King")
+	
+	# Execute the auto-play leader for player trigger directly
+	await gameplay._auto_play_leader_for_player()
+	
+	# Verify player played their General
+	assert(gameplay.has_played[0] == true, "Player should have played via auto-play")
+	assert(gameplay.player_hand.is_empty(), "Player hand should be empty after play")
+	assert(gameplay.player_table_cards.size() == 1, "Player should have 1 card on the table")
+	assert(gameplay.player_table_cards[0]["id"] == "R_1King", "Played card should be Red General")
+	
+	print("Timer timeout checks passed.")

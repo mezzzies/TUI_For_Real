@@ -149,6 +149,23 @@ var loop_count: int = 0
 var announcement_tween: Tween
 var custom_font = preload("res://asset/font/mechanical-font/MechanicalBold-oOmA.otf")
 
+# Timer Configuration & State
+@export var leader_select_time: float = 20.0
+@export var responder_select_time: float = 20.0
+
+@onready var time_label = get_node_or_null("Time")
+
+var state_time_left: float = 0.0
+var is_timer_running: bool = false
+var current_timer_state: String = ""
+var is_test_mode: bool = false
+
+# Scoreboard State & Bindings
+@onready var score_panel = get_node_or_null("ScorePanel")
+@onready var score_grid = get_node_or_null("ScorePanel/ScoreContainer/ScoreGrid")
+
+var loop_scores: Array = []
+
 func _ready() -> void:
 	if back_hand:
 		back_hand.visible = false
@@ -210,6 +227,14 @@ func _ready() -> void:
 			announcement_text.add_theme_color_override("font_outline_color", Color.BLACK)
 			announcement_text.add_theme_constant_override("outline_size", 12)
 		
+	# Disable keyboard focus for all buttons to prevent focus outlines when pressing Tab
+	get_cards_button.focus_mode = Control.FOCUS_NONE
+	confirm_button.focus_mode = Control.FOCUS_NONE
+	reset_button.focus_mode = Control.FOCUS_NONE
+	left_ready_button.focus_mode = Control.FOCUS_NONE
+	right_ready_button.focus_mode = Control.FOCUS_NONE
+	top_ready_button.focus_mode = Control.FOCUS_NONE
+
 	# Connect button events
 	get_cards_button.pressed.connect(_on_get_cards_pressed)
 	get_cards_button.pressed.connect(func(): _play_sfx_transient(click_sfx))
@@ -247,6 +272,376 @@ func _ready() -> void:
 		bgm_player.name = "BGMPlayer"
 		add_child(bgm_player)
 		bgm_player.play()
+		
+	# Scoreboard UI font overrides
+	var title_lbl = get_node_or_null("ScorePanel/ScoreContainer/TitleLabel")
+	if title_lbl:
+		title_lbl.add_theme_font_override("font", custom_font)
+		title_lbl.add_theme_color_override("font_color", Color.WHITE)
+		title_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		title_lbl.add_theme_constant_override("outline_size", 12)
+		
+	# Initialize time label visibility
+	_update_time_label()
+
+
+func _process(delta: float) -> void:
+	if is_test_mode or not is_timer_running:
+		return
+		
+	# Pause countdown if an announcement is currently visible
+	if announcement and announcement.visible:
+		_update_time_label()
+		return
+		
+	state_time_left -= delta
+	if state_time_left <= 0.0:
+		state_time_left = 0.0
+		is_timer_running = false
+		_update_time_label()
+		_on_state_timer_timeout()
+	else:
+		_update_time_label()
+
+
+func _start_state_timer(state_type: String) -> void:
+	if is_test_mode:
+		return
+	current_timer_state = state_type
+	if state_type == "leader":
+		state_time_left = leader_select_time
+	elif state_type == "responder":
+		state_time_left = responder_select_time
+	is_timer_running = true
+	_update_time_label()
+
+
+func _stop_state_timer() -> void:
+	is_timer_running = false
+	current_timer_state = ""
+	_update_time_label()
+
+
+func _update_time_label() -> void:
+	if not time_label:
+		return
+	if is_timer_running:
+		time_label.text = "Time: %02d" % [ceil(state_time_left)]
+		time_label.visible = true
+		if state_time_left < 10.0:
+			time_label.add_theme_color_override("font_color", Color.YELLOW)
+		else:
+			time_label.add_theme_color_override("font_color", Color.WHITE)
+	else:
+		time_label.visible = false
+
+
+func _on_state_timer_timeout() -> void:
+	var state = current_timer_state
+	_stop_state_timer()
+	
+	# Determine timeout text
+	var timeout_text = "Time Out!"
+	var tween = _show_announcement(timeout_text, 2.0)
+	if tween:
+		await tween.finished
+		
+	if state == "leader":
+		if current_leader == 0:
+			await _auto_play_leader_for_player()
+		else:
+			await _auto_play_for_bot(current_leader)
+	elif state == "responder":
+		await _auto_play_remaining_responders()
+
+
+func _auto_play_leader_for_player() -> void:
+	# Check if player has selected cards that form a valid play
+	var selected_cards = []
+	for slot in slots:
+		if slot.get_child_count() > 0:
+			var card = slot.get_child(0)
+			if "is_selected" in card and card.is_selected:
+				selected_cards.append(card)
+				
+	var selected_card_data = []
+	for card in selected_cards:
+		if card.has_meta("card_id"):
+			var cid = card.get_meta("card_id")
+			for hand_card in player_hand:
+				if hand_card["id"] == cid:
+					selected_card_data.append(hand_card)
+					break
+					
+	if not selected_cards.is_empty() and _detect_play_type(selected_card_data) != "":
+		await _on_confirm_pressed()
+	else:
+		# Deselect all
+		for slot in slots:
+			if slot.get_child_count() > 0:
+				var card = slot.get_child(0)
+				card.set_selected(false)
+				card.reset_visuals()
+				
+		# Select the first card in player's hand
+		for slot in slots:
+			if slot.get_child_count() > 0:
+				var card = slot.get_child(0)
+				card.set_selected(true)
+				break
+				
+		await _on_confirm_pressed()
+
+
+func _auto_play_for_bot(bot_idx: int) -> void:
+	if bot_idx == 1:
+		await _play_ready_sequence(left_player, left_table_area, left_slots, left_ready_button, l_thinking_tex, "left")
+	elif bot_idx == 2:
+		await _play_ready_sequence(top_player, top_table_area, top_slots, top_ready_button, t_thinking_tex, "top")
+	elif bot_idx == 3:
+		await _play_ready_sequence(right_player, right_table_area, right_slots, right_ready_button, r_thinking_tex, "right")
+
+
+func _auto_play_remaining_responders() -> void:
+	for i in range(4):
+		var hand_sz = 0
+		if i == 0: hand_sz = player_hand.size()
+		elif i == 1: hand_sz = left_hand.size()
+		elif i == 2: hand_sz = top_hand.size()
+		else: hand_sz = right_hand.size()
+		
+		if hand_sz > 0 and not has_played[i]:
+			if i == 0:
+				await _auto_play_responder_for_player()
+				while not has_played[0]:
+					await get_tree().process_frame
+			else:
+				if i == 1:
+					await _play_ready_sequence(left_player, left_table_area, left_slots, left_ready_button, l_thinking_tex, "left")
+				elif i == 2:
+					await _play_ready_sequence(top_player, top_table_area, top_slots, top_ready_button, t_thinking_tex, "top")
+				elif i == 3:
+					await _play_ready_sequence(right_player, right_table_area, right_slots, right_ready_button, r_thinking_tex, "right")
+
+
+func _auto_play_responder_for_player() -> void:
+	var selected_cards = []
+	for slot in slots:
+		if slot.get_child_count() > 0:
+			var card = slot.get_child(0)
+			if "is_selected" in card and card.is_selected:
+				selected_cards.append(card)
+				
+	if selected_cards.size() == active_card_count:
+		await _on_confirm_pressed()
+	else:
+		# Deselect all
+		for slot in slots:
+			if slot.get_child_count() > 0:
+				var card = slot.get_child(0)
+				card.set_selected(false)
+				card.reset_visuals()
+				
+		# Select first active_card_count cards in hand
+		var count = 0
+		for slot in slots:
+			if slot.get_child_count() > 0:
+				var card = slot.get_child(0)
+				card.set_selected(true)
+				count += 1
+				if count == active_card_count:
+					break
+					
+		await _on_confirm_pressed()
+
+
+func _input(event: InputEvent) -> void:
+	if is_test_mode:
+		return
+	if event is InputEventKey and event.keycode == KEY_TAB:
+		get_viewport().set_input_as_handled() # Consume key event to block built-in Control focus cycling
+		if event.pressed:
+			_show_score_panel(true)
+		else:
+			_show_score_panel(false)
+
+
+func _show_score_panel(show: bool) -> void:
+	if not score_panel:
+		return
+	if show:
+		_update_score_panel()
+		score_panel.visible = true
+	else:
+		score_panel.visible = false
+
+
+func _update_score_panel() -> void:
+	if not score_grid:
+		return
+		
+	# Clear existing children in grid
+	for child in score_grid.get_children():
+		score_grid.remove_child(child)
+		child.queue_free()
+		
+	# 1. Add Headers
+	var headers = ["PLAYER", "LOOP 1", "LOOP 2", "LOOP 3", "LOOP 4", "TOTAL"]
+	for h in headers:
+		var lbl = Label.new()
+		lbl.text = h
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		lbl.add_theme_font_override("font", custom_font)
+		lbl.add_theme_font_size_override("font_size", 18)
+		lbl.add_theme_color_override("font_color", Color.YELLOW)
+		lbl.add_theme_constant_override("outline_size", 6)
+		lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		score_grid.add_child(lbl)
+		
+	# 2. Add Row Data (0=Player, 1=Left, 2=Top, 3=Right)
+	var players = [
+		{"name": "Player", "key": "player"},
+		{"name": bot_personalities.get(1, "Left Bot"), "key": "left"},
+		{"name": bot_personalities.get(2, "Top Bot"), "key": "top"},
+		{"name": bot_personalities.get(3, "Right Bot"), "key": "right"}
+	]
+	
+	for p_info in players:
+		var name_lbl = Label.new()
+		name_lbl.text = p_info["name"]
+		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		name_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		name_lbl.add_theme_font_override("font", custom_font)
+		name_lbl.add_theme_font_size_override("font_size", 16)
+		name_lbl.add_theme_color_override("font_color", Color.WHITE)
+		name_lbl.add_theme_constant_override("outline_size", 4)
+		name_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		score_grid.add_child(name_lbl)
+		
+		var total_score = 0
+		for loop_idx in range(4):
+			var score_lbl = Label.new()
+			var val = ""
+			if loop_idx < loop_scores.size():
+				var s = loop_scores[loop_idx][p_info["key"]]
+				val = str(s)
+				total_score += s
+			else:
+				val = "-"
+			score_lbl.text = val
+			score_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			score_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			score_lbl.add_theme_font_override("font", custom_font)
+			score_lbl.add_theme_font_size_override("font_size", 16)
+			score_lbl.add_theme_color_override("font_color", Color.WHITE if val != "-" else Color.GRAY)
+			score_lbl.add_theme_constant_override("outline_size", 4)
+			score_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+			score_grid.add_child(score_lbl)
+			
+		var total_lbl = Label.new()
+		total_lbl.text = str(total_score)
+		total_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		total_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		total_lbl.add_theme_font_override("font", custom_font)
+		total_lbl.add_theme_font_size_override("font_size", 18)
+		total_lbl.add_theme_color_override("font_color", Color.GREEN)
+		total_lbl.add_theme_constant_override("outline_size", 6)
+		total_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		score_grid.add_child(total_lbl)
+
+	# 3. Add Check Sum Row (should be 8 for each loop, and up to 32 at Total)
+	var checksum_lbl = Label.new()
+	checksum_lbl.text = "Check Sum"
+	checksum_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	checksum_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	checksum_lbl.add_theme_font_override("font", custom_font)
+	checksum_lbl.add_theme_font_size_override("font_size", 16)
+	checksum_lbl.add_theme_color_override("font_color", Color.CYAN)
+	checksum_lbl.add_theme_constant_override("outline_size", 4)
+	checksum_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+	score_grid.add_child(checksum_lbl)
+	
+	var grand_checksum = 0
+	for loop_idx in range(4):
+		var check_lbl = Label.new()
+		var val = ""
+		if loop_idx < loop_scores.size():
+			var s = loop_scores[loop_idx]["player"] + loop_scores[loop_idx]["left"] + loop_scores[loop_idx]["top"] + loop_scores[loop_idx]["right"]
+			val = str(s)
+			grand_checksum += s
+		else:
+			val = "-"
+		check_lbl.text = val
+		check_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		check_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		check_lbl.add_theme_font_override("font", custom_font)
+		check_lbl.add_theme_font_size_override("font_size", 16)
+		check_lbl.add_theme_color_override("font_color", Color.CYAN if val != "-" else Color.GRAY)
+		check_lbl.add_theme_constant_override("outline_size", 4)
+		check_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		score_grid.add_child(check_lbl)
+		
+	var grand_lbl = Label.new()
+	grand_lbl.text = str(grand_checksum)
+	grand_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	grand_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	grand_lbl.add_theme_font_override("font", custom_font)
+	grand_lbl.add_theme_font_size_override("font_size", 18)
+	grand_lbl.add_theme_color_override("font_color", Color.CYAN)
+	grand_lbl.add_theme_constant_override("outline_size", 6)
+	grand_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+	score_grid.add_child(grand_lbl)
+
+
+func _finish_loop_and_transition() -> void:
+	# 1. Force showing the ScorePanel to show score of every player. (5 seconds)
+	_show_score_panel(true)
+	await get_tree().create_timer(5.0).timeout
+	_show_score_panel(false)
+	
+	# 2. Check if loop_count < 4 to continue next loop or round winner announcement
+	if loop_count < 4:
+		# Continue to the next loop with "last winner is the leader"
+		# The last winner index is already current_leader, so we keep it.
+		_on_get_cards_pressed(true)
+	else:
+		# Round is complete (4 loops finished)
+		# Calculate round winner
+		var totals = {"player": 0, "left": 0, "top": 0, "right": 0}
+		for s in loop_scores:
+			totals["player"] += s["player"]
+			totals["left"] += s["left"]
+			totals["top"] += s["top"]
+			totals["right"] += s["right"]
+			
+		var max_score = -1
+		var winners = []
+		for key in totals.keys():
+			if totals[key] > max_score:
+				max_score = totals[key]
+				winners = [key]
+			elif totals[key] == max_score:
+				winners.append(key)
+				
+		var winner_names = []
+		for w in winners:
+			if w == "player":
+				winner_names.append("Player")
+			elif w == "left":
+				winner_names.append(bot_personalities.get(1, "Left Bot"))
+			elif w == "top":
+				winner_names.append(bot_personalities.get(2, "Top Bot"))
+			else:
+				winner_names.append(bot_personalities.get(3, "Right Bot"))
+				
+		var winner_text = ""
+		if winner_names.size() == 1:
+			winner_text = "Round Winner:\n" + winner_names[0]
+		else:
+			winner_text = "Round Tie:\n" + ", ".join(winner_names)
+			
+		_show_announcement(winner_text, 4.0)
 
 
 func _play_sfx_transient(stream: AudioStream) -> void:
@@ -259,7 +654,13 @@ func _play_sfx_transient(stream: AudioStream) -> void:
 	player.finished.connect(player.queue_free)
 
 
-func _on_get_cards_pressed() -> void:
+func _on_get_cards_pressed(keep_leader: bool = false) -> void:
+	# Check if 4 loops have completed, in which case reset scoreboard for a new round
+	if loop_count >= 4:
+		loop_count = 0
+		loop_scores.clear()
+		_update_score_panel()
+
 	# 1. Clear any existing card views in all slots
 	for slot in slots:
 		for child in slot.get_children():
@@ -325,7 +726,8 @@ func _on_get_cards_pressed() -> void:
 	_update_win_area_icons(top_win_area, 0)
 
 	# Initialize leader and active states
-	current_leader = randi() % 4
+	if not keep_leader:
+		current_leader = randi() % 4
 	active_play_type = ""
 	active_card_count = 0
 	has_played = [false, false, false, false]
@@ -444,6 +846,37 @@ func _update_button_states_for_turn() -> void:
 		left_ready_button.disabled = true
 		right_ready_button.disabled = true
 		top_ready_button.disabled = true
+		_stop_state_timer()
+		return
+		
+	# Check if everyone has played (or if the turn is transitioning to reveal/scoring)
+	var everyone_played = true
+	for i in range(4):
+		var hand_sz = 0
+		var table_sz = 0
+		if i == 0:
+			hand_sz = player_hand.size()
+			table_sz = player_table_cards.size()
+		elif i == 1:
+			hand_sz = left_hand.size()
+			table_sz = left_table_cards.size()
+		elif i == 2:
+			hand_sz = top_hand.size()
+			table_sz = top_table_cards.size()
+		else:
+			hand_sz = right_hand.size()
+			table_sz = right_table_cards.size()
+			
+		if (hand_sz + table_sz) > 0 and table_sz == 0:
+			everyone_played = false
+			break
+			
+	if everyone_played:
+		confirm_button.disabled = true
+		left_ready_button.disabled = true
+		right_ready_button.disabled = true
+		top_ready_button.disabled = true
+		_stop_state_timer()
 		return
 		
 	if active_play_type == "":
@@ -452,12 +885,18 @@ func _update_button_states_for_turn() -> void:
 		left_ready_button.disabled = (current_leader != 1)
 		top_ready_button.disabled = (current_leader != 2)
 		right_ready_button.disabled = (current_leader != 3)
+		
+		if current_timer_state != "leader":
+			_start_state_timer("leader")
 	else:
 		# Leader has played, other players must respond
 		confirm_button.disabled = has_played[0] or player_hand.is_empty()
 		left_ready_button.disabled = has_played[1] or left_hand.is_empty()
 		top_ready_button.disabled = has_played[2] or top_hand.is_empty()
 		right_ready_button.disabled = has_played[3] or right_hand.is_empty()
+		
+		if current_timer_state != "responder":
+			_start_state_timer("responder")
 
 
 func _detect_play_type(cards: Array) -> String:
@@ -1121,6 +1560,9 @@ func _on_reset_pressed() -> void:
 	loop_count = 0
 	bot_personalities.clear()
 	active_bot_personalities.clear()
+	loop_scores.clear()
+	_update_score_panel()
+	_show_score_panel(false)
 	
 	# Clear the texts on reset
 	player_name_label.text = ""
@@ -1545,9 +1987,9 @@ func _update_win_area_icons(win_area: Control, won_cards_count: int) -> void:
 			icon_node.visible = (i <= visible_count)
 
 
-func _show_announcement(text: String, duration: float = 2.0) -> void:
+func _show_announcement(text: String, duration: float = 2.0) -> Tween:
 	if not announcement or not announcement_text:
-		return
+		return null
 	announcement_text.text = text
 	
 	if announcement_tween:
@@ -1565,6 +2007,7 @@ func _show_announcement(text: String, duration: float = 2.0) -> void:
 	announcement_tween.tween_property(announcement, "modulate:a", 0.0, 0.4).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
 	# Hide
 	announcement_tween.tween_callback(func(): announcement.visible = false)
+	return announcement_tween
 
 
 func _start_reveal_and_scoring_sequence() -> void:
@@ -1678,10 +2121,31 @@ func _start_reveal_and_scoring_sequence() -> void:
 	reset_button.disabled = false
 	get_cards_button.disabled = false
 	
-	# Check if hand cards are empty
+	# Check if hand cards are empty (loop ends)
 	if player_hand.is_empty():
 		print("Round completed! All cards played.")
+		
+		# Calculate and store scores: Score = (Collected Cards) / 4
+		var p_score = player_won_cards.size() / 4
+		var l_score = left_won_cards.size() / 4
+		var t_score = top_won_cards.size() / 4
+		var r_score = right_won_cards.size() / 4
+		
+		var loop_idx = loop_count - 1 # loop_count is 1-indexed (incremented in _initialize_loop_personalities)
+		while loop_scores.size() <= loop_idx:
+			loop_scores.append({"player": 0, "left": 0, "top": 0, "right": 0})
+		loop_scores[loop_idx] = {
+			"player": p_score,
+			"left": l_score,
+			"top": t_score,
+			"right": r_score
+		}
+		
+		_update_score_panel()
 		_update_button_states_for_turn()
+		
+		# Trigger automatic scoreboard display and transition
+		_finish_loop_and_transition()
 	else:
 		# Enforce new leader button states for the next turn
 		_update_button_states_for_turn()

@@ -150,8 +150,13 @@ var announcement_tween: Tween
 var custom_font = preload("res://asset/font/mechanical-font/MechanicalBold-oOmA.otf")
 
 # Timer Configuration & State
+<<<<<<< HEAD
 @export var leader_select_time: float = 20.0
 @export var responder_select_time: float = 20.0
+=======
+@export var leader_select_time: float = 5.0
+@export var responder_select_time: float = 5.0
+>>>>>>> 94e3a1a041b04d1f95156a394635f520424a4a9c
 
 @onready var time_label = get_node_or_null("Time")
 
@@ -280,9 +285,12 @@ func _ready() -> void:
 		title_lbl.add_theme_color_override("font_color", Color.WHITE)
 		title_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 		title_lbl.add_theme_constant_override("outline_size", 12)
+<<<<<<< HEAD
 		
 	# Initialize time label visibility
 	_update_time_label()
+=======
+>>>>>>> 94e3a1a041b04d1f95156a394635f520424a4a9c
 
 
 func _process(delta: float) -> void:
@@ -327,6 +335,7 @@ func _update_time_label() -> void:
 		return
 	if is_timer_running:
 		time_label.text = "Time: %02d" % [ceil(state_time_left)]
+<<<<<<< HEAD
 		time_label.visible = true
 		if state_time_left < 10.0:
 			time_label.add_theme_color_override("font_color", Color.YELLOW)
@@ -334,6 +343,10 @@ func _update_time_label() -> void:
 			time_label.add_theme_color_override("font_color", Color.WHITE)
 	else:
 		time_label.visible = false
+=======
+	else:
+		time_label.text = "Time: --"
+>>>>>>> 94e3a1a041b04d1f95156a394635f520424a4a9c
 
 
 func _on_state_timer_timeout() -> void:

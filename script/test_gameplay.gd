@@ -39,9 +39,6 @@ var bgm_music = preload("res://asset/music/waveloom-slow-jazz.mp3")
 
 # Bot components
 @onready var reset_button = $ResetButton
-@onready var left_ready_button = $LeftReadyButton
-@onready var right_ready_button = $RightReadyButton
-@onready var top_ready_button = $TopReadyButton
 
 @onready var left_player = $Left_Player
 @onready var right_player = $Right_Player
@@ -165,6 +162,7 @@ var is_test_mode: bool = false
 @onready var score_grid = get_node_or_null("ScorePanel/ScoreContainer/ScoreGrid")
 
 var loop_scores: Array = []
+var bots_thinking: Array = [false, false, false, false]
 
 func _ready() -> void:
 	if back_hand:
@@ -231,9 +229,6 @@ func _ready() -> void:
 	get_cards_button.focus_mode = Control.FOCUS_NONE
 	confirm_button.focus_mode = Control.FOCUS_NONE
 	reset_button.focus_mode = Control.FOCUS_NONE
-	left_ready_button.focus_mode = Control.FOCUS_NONE
-	right_ready_button.focus_mode = Control.FOCUS_NONE
-	top_ready_button.focus_mode = Control.FOCUS_NONE
 
 	# Connect button events
 	get_cards_button.pressed.connect(_on_get_cards_pressed)
@@ -247,18 +242,6 @@ func _ready() -> void:
 	reset_button.pressed.connect(_on_reset_pressed)
 	reset_button.pressed.connect(func(): _play_sfx_transient(click_sfx))
 	reset_button.mouse_entered.connect(func(): _play_sfx_transient(hover_sfx))
-	
-	left_ready_button.pressed.connect(func(): _play_ready_sequence(left_player, left_table_area, left_slots, left_ready_button, l_thinking_tex, "left"))
-	left_ready_button.pressed.connect(func(): _play_sfx_transient(click_sfx))
-	left_ready_button.mouse_entered.connect(func(): _play_sfx_transient(hover_sfx))
-	
-	right_ready_button.pressed.connect(func(): _play_ready_sequence(right_player, right_table_area, right_slots, right_ready_button, r_thinking_tex, "right"))
-	right_ready_button.pressed.connect(func(): _play_sfx_transient(click_sfx))
-	right_ready_button.mouse_entered.connect(func(): _play_sfx_transient(hover_sfx))
-	
-	top_ready_button.pressed.connect(func(): _play_ready_sequence(top_player, top_table_area, top_slots, top_ready_button, t_thinking_tex, "top"))
-	top_ready_button.pressed.connect(func(): _play_sfx_transient(click_sfx))
-	top_ready_button.mouse_entered.connect(func(): _play_sfx_transient(hover_sfx))
 	
 	# Start all breathing animations
 	_start_all_breathing()
@@ -395,11 +378,11 @@ func _auto_play_leader_for_player() -> void:
 
 func _auto_play_for_bot(bot_idx: int) -> void:
 	if bot_idx == 1:
-		await _play_ready_sequence(left_player, left_table_area, left_slots, left_ready_button, l_thinking_tex, "left")
+		await _play_ready_sequence(left_player, left_table_area, left_slots, l_thinking_tex, "left")
 	elif bot_idx == 2:
-		await _play_ready_sequence(top_player, top_table_area, top_slots, top_ready_button, t_thinking_tex, "top")
+		await _play_ready_sequence(top_player, top_table_area, top_slots, t_thinking_tex, "top")
 	elif bot_idx == 3:
-		await _play_ready_sequence(right_player, right_table_area, right_slots, right_ready_button, r_thinking_tex, "right")
+		await _play_ready_sequence(right_player, right_table_area, right_slots, r_thinking_tex, "right")
 
 
 func _auto_play_remaining_responders() -> void:
@@ -417,11 +400,53 @@ func _auto_play_remaining_responders() -> void:
 					await get_tree().process_frame
 			else:
 				if i == 1:
-					await _play_ready_sequence(left_player, left_table_area, left_slots, left_ready_button, l_thinking_tex, "left")
+					await _play_ready_sequence(left_player, left_table_area, left_slots, l_thinking_tex, "left")
 				elif i == 2:
-					await _play_ready_sequence(top_player, top_table_area, top_slots, top_ready_button, t_thinking_tex, "top")
+					await _play_ready_sequence(top_player, top_table_area, top_slots, t_thinking_tex, "top")
 				elif i == 3:
-					await _play_ready_sequence(right_player, right_table_area, right_slots, right_ready_button, r_thinking_tex, "right")
+					await _play_ready_sequence(right_player, right_table_area, right_slots, r_thinking_tex, "right")
+
+
+func _trigger_auto_bot_play(bot_idx: int) -> void:
+	if is_test_mode:
+		return
+		
+	if bots_thinking[bot_idx]:
+		return
+		
+	bots_thinking[bot_idx] = true
+	
+	# Determine random delay between 2.0 and 7.0 seconds
+	var delay = randf_range(2.0, 7.0)
+	await get_tree().create_timer(delay).timeout
+	
+	# Reset state check after delay
+	if not bots_thinking[bot_idx]:
+		return
+		
+	bots_thinking[bot_idx] = false
+	
+	# Verify bot still needs to make a play
+	var still_needs_to_play = false
+	if active_play_type == "":
+		if current_leader == bot_idx:
+			still_needs_to_play = true
+	else:
+		var hand_sz = 0
+		if bot_idx == 1: hand_sz = left_hand.size()
+		elif bot_idx == 2: hand_sz = top_hand.size()
+		else: hand_sz = right_hand.size()
+		
+		if hand_sz > 0 and not has_played[bot_idx]:
+			still_needs_to_play = true
+			
+	if still_needs_to_play:
+		if bot_idx == 1:
+			await _play_ready_sequence(left_player, left_table_area, left_slots, l_thinking_tex, "left")
+		elif bot_idx == 2:
+			await _play_ready_sequence(top_player, top_table_area, top_slots, t_thinking_tex, "top")
+		elif bot_idx == 3:
+			await _play_ready_sequence(right_player, right_table_area, right_slots, r_thinking_tex, "right")
 
 
 func _auto_play_responder_for_player() -> void:
@@ -661,6 +686,19 @@ func _on_get_cards_pressed(keep_leader: bool = false) -> void:
 		loop_scores.clear()
 		_update_score_panel()
 
+	var hand_area = $HandArea
+	if not is_test_mode:
+		get_cards_button.disabled = true
+		reset_button.disabled = true
+		confirm_button.disabled = true
+		
+		if breathing_tween:
+			breathing_tween.kill()
+		var screen_height = get_viewport_rect().size.y
+		var tween_hand_down = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+		tween_hand_down.tween_property(hand_area, "position:y", screen_height + 50.0, 0.4)
+		await tween_hand_down.finished
+
 	# 1. Clear any existing card views in all slots
 	for slot in slots:
 		for child in slot.get_children():
@@ -678,14 +716,6 @@ func _on_get_cards_pressed(keep_leader: bool = false) -> void:
 		for child in slot.get_children():
 			child.queue_free()
 			
-	# Reset HandArea position and restart breathing animation
-	var hand_area = $HandArea
-	if breathing_tween:
-		breathing_tween.kill()
-	if base_hand_y != 0.0:
-		hand_area.position.y = base_hand_y
-	_start_breathing_animation()
-	
 	# Reset bot player visuals
 	left_player.texture = l_thinking_tex
 	right_player.texture = r_thinking_tex
@@ -699,11 +729,6 @@ func _on_get_cards_pressed(keep_leader: bool = false) -> void:
 	_start_left_breathing()
 	_start_right_breathing()
 	_start_top_breathing()
-	
-	# Re-enable all buttons
-	left_ready_button.disabled = false
-	right_ready_button.disabled = false
-	top_ready_button.disabled = false
 	
 	# Clear all internal card state
 	player_hand.clear()
@@ -770,48 +795,29 @@ func _on_get_cards_pressed(keep_leader: bool = false) -> void:
 		# Store card id as metadata on the node for later matching
 		card_node.set_meta("card_id", card["id"])
 	
+	# Animate hand back up to default position if not in test mode, otherwise snap
+	if not is_test_mode:
+		var tween_hand_up = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tween_hand_up.tween_property(hand_area, "position:y", base_hand_y, 0.8)
+		await tween_hand_up.finished
+		_start_breathing_animation()
+	else:
+		if base_hand_y != 0.0:
+			hand_area.position.y = base_hand_y
+		_start_breathing_animation()
+
 	# Update button states for leader
 	_update_button_states_for_turn()
+	if not is_test_mode:
+		reset_button.disabled = false
+		get_cards_button.disabled = false
 	
 	# Debug log
 	_print_debug_state("GET CARDS - All players dealt")
 
 
 func _generate_deck() -> Array:
-	var new_deck = []
-	var card_defs = [
-		{"rank": 1, "filename": "1King"},
-		{"rank": 2, "filename": "2Plane"},
-		{"rank": 3, "filename": "3Elephant"},
-		{"rank": 4, "filename": "4Boat"},
-		{"rank": 5, "filename": "5Horse"},
-		{"rank": 6, "filename": "6House"},
-		{"rank": 7, "filename": "7Chip"}
-	]
-	var counts = {
-		1: 1, # General
-		2: 2, # Advisor
-		3: 2, # Elephant
-		4: 2, # Rook
-		5: 2, # Horse
-		6: 2, # Cannon
-		7: 5  # Soldier
-	}
-	
-	for color in ["R", "B"]:
-		for def in card_defs:
-			var qty = counts[def["rank"]]
-			for i in range(qty):
-				var card_id = color + "_" + def["filename"]
-				if qty > 1:
-					card_id += "_" + str(i + 1)
-				new_deck.append({
-					"id": card_id,
-					"rank": def["rank"],
-					"color": color,
-					"texture_path": "res://asset/card/default/TuiSkin_" + color + "_" + def["filename"] + ".png"
-				})
-	return new_deck
+	return CardRules.generate_deck()
 
 
 func _get_card_ids(cards: Array) -> Array:
@@ -839,18 +845,7 @@ func _print_debug_state(context: String) -> void:
 	print("=================")
 
 
-func _update_button_states_for_turn() -> void:
-	# If hands are empty, disable everything and return
-	if player_hand.is_empty() and left_hand.is_empty() and right_hand.is_empty() and top_hand.is_empty():
-		confirm_button.disabled = true
-		left_ready_button.disabled = true
-		right_ready_button.disabled = true
-		top_ready_button.disabled = true
-		_stop_state_timer()
-		return
-		
-	# Check if everyone has played (or if the turn is transitioning to reveal/scoring)
-	var everyone_played = true
+func _has_everyone_played() -> bool:
 	for i in range(4):
 		var hand_sz = 0
 		var table_sz = 0
@@ -867,203 +862,93 @@ func _update_button_states_for_turn() -> void:
 			hand_sz = right_hand.size()
 			table_sz = right_table_cards.size()
 			
-		if (hand_sz + table_sz) > 0 and table_sz == 0:
-			everyone_played = false
-			break
+		if (hand_sz + table_sz) > 0 and not has_played[i]:
+			return false
+	return true
+
+
+func _update_leader_name_labels() -> void:
+	var labels = [player_name_label, left_name_label, top_name_label, right_name_label]
+	var base_names = [
+		"Player",
+		active_bot_personalities.get(1, bot_personalities.get(1, "Left Bot")),
+		active_bot_personalities.get(2, bot_personalities.get(2, "Top Bot")),
+		active_bot_personalities.get(3, bot_personalities.get(3, "Right Bot"))
+	]
+	
+	for i in range(4):
+		var lbl = labels[i]
+		if not lbl:
+			continue
+		var name_str = base_names[i]
+		if name_str == "" or name_str == null:
+			lbl.text = ""
+			continue
 			
-	if everyone_played:
+		if i == current_leader:
+			lbl.text = "**" + name_str + "**"
+			lbl.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0)) # Gold Color
+		else:
+			lbl.text = name_str
+			lbl.add_theme_color_override("font_color", Color.WHITE) # Normal White Color
+
+
+func _update_button_states_for_turn() -> void:
+	# If hands are empty, disable everything and return
+	if player_hand.is_empty() and left_hand.is_empty() and right_hand.is_empty() and top_hand.is_empty():
 		confirm_button.disabled = true
-		left_ready_button.disabled = true
-		right_ready_button.disabled = true
-		top_ready_button.disabled = true
+		_stop_state_timer()
+		return
+		
+	# Check if everyone has played (or if the turn is transitioning to reveal/scoring)
+	if _has_everyone_played():
+		confirm_button.disabled = true
 		_stop_state_timer()
 		return
 		
 	if active_play_type == "":
 		# Leader has not played yet
 		confirm_button.disabled = (current_leader != 0)
-		left_ready_button.disabled = (current_leader != 1)
-		top_ready_button.disabled = (current_leader != 2)
-		right_ready_button.disabled = (current_leader != 3)
 		
 		if current_timer_state != "leader":
 			_start_state_timer("leader")
 	else:
 		# Leader has played, other players must respond
 		confirm_button.disabled = has_played[0] or player_hand.is_empty()
-		left_ready_button.disabled = has_played[1] or left_hand.is_empty()
-		top_ready_button.disabled = has_played[2] or top_hand.is_empty()
-		right_ready_button.disabled = has_played[3] or right_hand.is_empty()
 		
 		if current_timer_state != "responder":
 			_start_state_timer("responder")
+			
+	# Auto Bot Plays Scheduling
+	if active_play_type == "":
+		if current_leader != 0 and not bots_thinking[current_leader]:
+			_trigger_auto_bot_play(current_leader)
+	else:
+		# Bot Responders
+		for i in [1, 2, 3]:
+			var hand_sz = 0
+			if i == 1: hand_sz = left_hand.size()
+			elif i == 2: hand_sz = top_hand.size()
+			else: hand_sz = right_hand.size()
+			
+			if hand_sz > 0 and not has_played[i] and not bots_thinking[i]:
+				_trigger_auto_bot_play(i)
 
 
 func _detect_play_type(cards: Array) -> String:
-	var count = cards.size()
-	if count == 1:
-		return "Single"
-	elif count == 2:
-		if cards[0]["rank"] == cards[1]["rank"] and cards[0]["color"] == cards[1]["color"]:
-			return "Pair"
-	elif count >= 3 and count <= 6:
-		# Check if it's a Soldier Set
-		var is_soldier_set = true
-		var color = cards[0]["color"]
-		for c in cards:
-			if c["rank"] != 7 or c["color"] != color:
-				is_soldier_set = false
-				break
-		if is_soldier_set and count <= 5:
-			return "Soldier Set"
-			
-		# Check if it's a Noble Set
-		var is_noble_set = true
-		for c in cards:
-			if c["color"] != color:
-				is_noble_set = false
-				break
-		if is_noble_set:
-			var ranks = []
-			for c in cards:
-				ranks.append(c["rank"])
-			
-			var is_royal = true
-			var is_war = true
-			for r in ranks:
-				if not r in [1, 2, 3]:
-					is_royal = false
-				if not r in [4, 5, 6]:
-					is_war = false
-					
-			if is_royal and (1 in ranks) and (2 in ranks) and (3 in ranks):
-				return "Noble Set"
-			elif is_war and (4 in ranks) and (5 in ranks) and (6 in ranks):
-				return "Noble Set"
-				
-	return ""
+	return CardRules.detect_play_type(cards)
 
 
 func _is_valid_play(cards: Array, play_type: String, required_count: int) -> bool:
-	if cards.size() != required_count:
-		return false
-	return _detect_play_type(cards) == play_type
+	return CardRules.is_valid_play(cards, play_type, required_count)
 
 
 func _compare_valid_plays(play_a: Array, play_b: Array, play_type: String) -> int:
-	match play_type:
-		"Single", "Pair":
-			var rank_a = play_a[0]["rank"]
-			var rank_b = play_b[0]["rank"]
-			if rank_a < rank_b:
-				return 1
-			elif rank_a > rank_b:
-				return -1
-			else:
-				var color_a = play_a[0]["color"]
-				var color_b = play_b[0]["color"]
-				if color_a == "R" and color_b == "B":
-					return 1
-				elif color_a == "B" and color_b == "R":
-					return -1
-				else:
-					return 0
-		"Noble Set":
-			var a_is_royal = play_a[0]["rank"] in [1, 2, 3]
-			var b_is_royal = play_b[0]["rank"] in [1, 2, 3]
-			if a_is_royal and not b_is_royal:
-				return 1
-			elif not a_is_royal and b_is_royal:
-				return -1
-			else:
-				var color_a = play_a[0]["color"]
-				var color_b = play_b[0]["color"]
-				if color_a == "R" and color_b == "B":
-					return 1
-				elif color_a == "B" and color_b == "R":
-					return -1
-				else:
-					return 0
-		"Soldier Set":
-			var color_a = play_a[0]["color"]
-			var color_b = play_b[0]["color"]
-			if color_a == "R" and color_b == "B":
-				return 1
-			elif color_a == "B" and color_b == "R":
-				return -1
-			else:
-				return 0
-	return 0
+	return CardRules.compare_valid_plays(play_a, play_b, play_type)
 
 
 func _find_combinations(hand: Array, play_type: String, count: int) -> Array:
-	var combos = []
-	match play_type:
-		"Single":
-			for c in hand:
-				combos.append([c])
-		"Pair":
-			for i in range(hand.size()):
-				for j in range(i + 1, hand.size()):
-					var c1 = hand[i]
-					var c2 = hand[j]
-					if c1["rank"] == c2["rank"] and c1["color"] == c2["color"]:
-						combos.append([c1, c2])
-		"Noble Set":
-			var red_cards = []
-			var black_cards = []
-			for c in hand:
-				if c["color"] == "R":
-					red_cards.append(c)
-				else:
-					black_cards.append(c)
-			for color_group in [red_cards, black_cards]:
-				var sub_combos = _get_combinations_of_size(color_group, count)
-				for combo in sub_combos:
-					var ranks = []
-					for c in combo:
-						ranks.append(c["rank"])
-					var is_royal = true
-					var is_war = true
-					for r in ranks:
-						if not r in [1, 2, 3]:
-							is_royal = false
-						if not r in [4, 5, 6]:
-							is_war = false
-					if is_royal and (1 in ranks) and (2 in ranks) and (3 in ranks):
-						combos.append(combo)
-					elif is_war and (4 in ranks) and (5 in ranks) and (6 in ranks):
-						combos.append(combo)
-		"Soldier Set":
-			var red_soldiers = []
-			var black_soldiers = []
-			for c in hand:
-				if c["rank"] == 7:
-					if c["color"] == "R":
-						red_soldiers.append(c)
-					else:
-						black_soldiers.append(c)
-			for color_group in [red_soldiers, black_soldiers]:
-				if color_group.size() >= count:
-					var sub_combos = _get_combinations_of_size(color_group, count)
-					combos.append_array(sub_combos)
-	return combos
-
-
-func _get_combinations_of_size(arr: Array, k: int) -> Array:
-	var results = []
-	_combine_helper(arr, k, 0, [], results)
-	return results
-
-
-func _combine_helper(arr: Array, k: int, start: int, current: Array, results: Array) -> void:
-	if current.size() == k:
-		results.append(current.duplicate())
-		return
-	for i in range(start, arr.size()):
-		current.append(arr[i])
-		_combine_helper(arr, k, i + 1, current, results)
-		current.remove_at(current.size() - 1)
+	return CardRules.find_combinations(hand, play_type, count)
 
 
 func _initialize_loop_personalities() -> void:
@@ -1078,12 +963,6 @@ func _initialize_loop_personalities() -> void:
 		print("Top Bot (2): ", bot_personalities[2])
 		print("Right Bot (3): ", bot_personalities[3])
 		print("-----------------------------------------------")
-		
-		# Set text on the UI labels to reflect assigned base personalities
-		player_name_label.text = "Player"
-		left_name_label.text = bot_personalities[1]
-		top_name_label.text = bot_personalities[2]
-		right_name_label.text = bot_personalities[3]
 		
 	loop_count += 1
 	
@@ -1108,6 +987,9 @@ func _initialize_loop_personalities() -> void:
 	print("Top Bot (2): ", active_bot_personalities[2])
 	print("Right Bot (3): ", active_bot_personalities[3])
 	print("--------------------------------------")
+	
+	# Highlight active leader
+	_update_leader_name_labels()
 
 
 func _start_all_breathing() -> void:
@@ -1316,31 +1198,10 @@ func _on_confirm_pressed() -> void:
 	_print_debug_state("CONFIRM - Player confirmed " + str(selected_cards.size()) + " card(s)")
 	
 	# Check if everyone has played
-	var everyone_played = true
-	for i in range(4):
-		var hand_sz = 0
-		var table_sz = 0
-		if i == 0:
-			hand_sz = player_hand.size()
-			table_sz = player_table_cards.size()
-		elif i == 1:
-			hand_sz = left_hand.size()
-			table_sz = left_table_cards.size()
-		elif i == 2:
-			hand_sz = top_hand.size()
-			table_sz = top_table_cards.size()
-		else:
-			hand_sz = right_hand.size()
-			table_sz = right_table_cards.size()
-			
-		if (hand_sz + table_sz) > 0 and table_sz == 0:
-			everyone_played = false
-			break
-			
-	if everyone_played:
+	if _has_everyone_played():
 		_start_reveal_and_scoring_sequence()
 
-func _play_ready_sequence(player: TextureRect, table_area: Control, slots_list: Array, ready_button: Button, thinking_tex: Texture2D, direction: String) -> void:
+func _play_ready_sequence(player: TextureRect, table_area: Control, slots_list: Array, thinking_tex: Texture2D, direction: String) -> void:
 	# Find appropriate hand data reference
 	var hand_ref: Array
 	var table_ref: Array
@@ -1387,12 +1248,8 @@ func _play_ready_sequence(player: TextureRect, table_area: Control, slots_list: 
 		table_ref.append(card)
 
 	# Disable all controls during animation to avoid state overlap
-	left_ready_button.disabled = true
-	right_ready_button.disabled = true
-	top_ready_button.disabled = true
 	reset_button.disabled = true
 	get_cards_button.disabled = true
-	confirm_button.disabled = true
 	
 	# Stop breathing tween
 	var breathing_tween: Tween
@@ -1499,35 +1356,13 @@ func _play_ready_sequence(player: TextureRect, table_area: Control, slots_list: 
 	# Update button states for others
 	_update_button_states_for_turn()
 	
-	# Keep the ready button that was just used disabled so they can't spam play on the same player
-	ready_button.disabled = true
+
 	
 	# Print debug state
 	_print_debug_state("READY - Bot " + direction + " played " + str(num_cards) + " card(s)")
 	
 	# Check if everyone has played
-	var everyone_played = true
-	for i in range(4):
-		var hand_sz = 0
-		var table_sz = 0
-		if i == 0:
-			hand_sz = player_hand.size()
-			table_sz = player_table_cards.size()
-		elif i == 1:
-			hand_sz = left_hand.size()
-			table_sz = left_table_cards.size()
-		elif i == 2:
-			hand_sz = top_hand.size()
-			table_sz = top_table_cards.size()
-		else:
-			hand_sz = right_hand.size()
-			table_sz = right_table_cards.size()
-			
-		if (hand_sz + table_sz) > 0 and table_sz == 0:
-			everyone_played = false
-			break
-			
-	if everyone_played:
+	if _has_everyone_played():
 		_start_reveal_and_scoring_sequence()
 
 func _on_reset_pressed() -> void:
@@ -1561,6 +1396,7 @@ func _on_reset_pressed() -> void:
 	bot_personalities.clear()
 	active_bot_personalities.clear()
 	loop_scores.clear()
+	bots_thinking = [false, false, false, false]
 	_update_score_panel()
 	_show_score_panel(false)
 	
@@ -2013,9 +1849,6 @@ func _show_announcement(text: String, duration: float = 2.0) -> Tween:
 func _start_reveal_and_scoring_sequence() -> void:
 	# Disable all ready/confirm buttons during reveal
 	confirm_button.disabled = true
-	left_ready_button.disabled = true
-	right_ready_button.disabled = true
-	top_ready_button.disabled = true
 	reset_button.disabled = true
 	get_cards_button.disabled = true
 	
@@ -2111,6 +1944,9 @@ func _start_reveal_and_scoring_sequence() -> void:
 	
 	# Set next leader to winner
 	current_leader = winner_idx
+	
+	# Update name labels for the new leader
+	_update_leader_name_labels()
 	
 	# Reset active turn properties
 	active_play_type = ""

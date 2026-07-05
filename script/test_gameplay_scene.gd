@@ -45,9 +45,7 @@ func run_basic_checks(gameplay):
 	print("Testing basic node bindings...")
 	assert(gameplay.get_cards_button != null, "get_cards_button must exist")
 	assert(gameplay.reset_button != null, "reset_button must exist")
-	assert(gameplay.left_ready_button != null, "left_ready_button must exist")
-	assert(gameplay.right_ready_button != null, "right_ready_button must exist")
-	assert(gameplay.top_ready_button != null, "top_ready_button must exist")
+
 	assert(gameplay.confirm_button != null, "confirm_button must exist")
 	assert(gameplay.announcement != null, "announcement overlay must exist")
 	assert(gameplay.announcement_text != null, "announcement_text label must exist")

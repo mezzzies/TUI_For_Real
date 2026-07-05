@@ -1354,45 +1354,6 @@ offset_bottom = 52.0
 grow_horizontal = 0
 text = "Reset"
 
-[node name="LeftReadyButton" type="Button" parent="." unique_id=112211]
-layout_mode = 1
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_left = 213.0
-offset_top = -13.0
-offset_right = 353.0
-offset_bottom = 27.0
-grow_vertical = 2
-text = "Left Ready"
-
-[node name="RightReadyButton" type="Button" parent="." unique_id=223322]
-layout_mode = 1
-anchors_preset = 6
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = -368.0
-offset_top = -9.0
-offset_right = -228.0
-offset_bottom = 31.0
-grow_horizontal = 0
-grow_vertical = 2
-text = "Right Ready"
-
-[node name="TopReadyButton" type="Button" parent="." unique_id=334433]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -70.0
-offset_top = 220.0
-offset_right = 70.0
-offset_bottom = 260.0
-grow_horizontal = 2
-text = "Top Ready"
-
 [node name="ConfirmButton" type="Button" parent="." unique_id=55667788]
 layout_mode = 1
 anchors_preset = 3

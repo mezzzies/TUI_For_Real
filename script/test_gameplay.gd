@@ -335,7 +335,6 @@ func _update_time_label() -> void:
 		return
 	if is_timer_running:
 		time_label.text = "Time: %02d" % [ceil(state_time_left)]
-<<<<<<< HEAD
 		time_label.visible = true
 		if state_time_left < 10.0:
 			time_label.add_theme_color_override("font_color", Color.YELLOW)
@@ -343,10 +342,6 @@ func _update_time_label() -> void:
 			time_label.add_theme_color_override("font_color", Color.WHITE)
 	else:
 		time_label.visible = false
-=======
-	else:
-		time_label.text = "Time: --"
->>>>>>> 94e3a1a041b04d1f95156a394635f520424a4a9c
 
 
 func _on_state_timer_timeout() -> void:

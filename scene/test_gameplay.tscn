@@ -1330,30 +1330,6 @@ expand_mode = 1
 stretch_mode = 5
 metadata/_edit_use_anchors_ = true
 
-[node name="GetCardsButton" type="Button" parent="." unique_id=1973624286]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -96.0
-offset_top = 54.0
-offset_right = -14.0
-offset_bottom = 94.0
-grow_horizontal = 0
-text = "Get cards"
-
-[node name="ResetButton" type="Button" parent="." unique_id=-1321343010]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -96.0
-offset_top = 12.0
-offset_right = -14.0
-offset_bottom = 52.0
-grow_horizontal = 0
-text = "Reset"
-
 [node name="ConfirmButton" type="Button" parent="." unique_id=55667788]
 layout_mode = 1
 anchors_preset = 3
@@ -1504,10 +1480,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -340.0
-offset_top = -180.0
-offset_right = 340.0
-offset_bottom = 180.0
+offset_left = -420.0
+offset_top = -240.0
+offset_right = 420.0
+offset_bottom = 240.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.08, 0.09, 0.12, 0.94)

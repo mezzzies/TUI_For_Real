@@ -6,7 +6,6 @@ const BACKHAND_OFFSET = 40.0
 const TOP_BACKHAND_OFFSET = 40.0
 const SIDE_BACKHAND_OFFSET = 100.0
 
-@onready var get_cards_button = $GetCardsButton
 @onready var slots = [
 	$HandArea/CardSlot0,
 	$HandArea/CardSlot1,
@@ -24,6 +23,7 @@ var click_sfx = preload("res://asset/sfx/tock.mp3")
 var bgm_music = preload("res://asset/music/waveloom-slow-jazz.mp3")
 
 @onready var confirm_button = $ConfirmButton
+var exit_to_menu_button: Button = null
 @onready var table_area = $TableArea
 @onready var back_hand = $BackHand
 @onready var table_slots = [
@@ -38,7 +38,6 @@ var bgm_music = preload("res://asset/music/waveloom-slow-jazz.mp3")
 ]
 
 # Bot components
-@onready var reset_button = $ResetButton
 
 @onready var left_player = $Left_Player
 @onready var right_player = $Right_Player
@@ -124,8 +123,6 @@ var top_won_cards: Array = []
 
 # Bot personalities configuration (1: Left Bot, 2: Top Bot, 3: Right Bot)
 var bot_personalities: Dictionary = {}
-# The active personality for the current loop (resolves Meta Mezz transitions)
-var active_bot_personalities: Dictionary = {}
 # Tracks the number of loops completed in the current round
 var loop_count: int = 0
 
@@ -146,6 +143,13 @@ var loop_count: int = 0
 var announcement_tween: Tween
 var custom_font = preload("res://asset/font/mechanical-font/MechanicalBold-oOmA.otf")
 
+# Input configurations (can be set by previous scene/external script before _ready)
+@export var game_mode: String = "Mass Mode"
+@export var select_time_preset: String = "Fast" # "Fast" (10s), "Normal" (20s), "Long" (30s)
+@export var round_preset: String = "Normal"        # "Short" (1 round / 4 loops), "Normal" (2 rounds / 8 loops), "Long" (4 rounds / 16 loops)
+
+var rounds_completed: int = 0
+
 # Timer Configuration & State
 @export var leader_select_time: float = 20.0
 @export var responder_select_time: float = 20.0
@@ -162,12 +166,30 @@ var is_test_mode: bool = false
 @onready var score_grid = get_node_or_null("ScorePanel/ScoreContainer/ScoreGrid")
 
 var loop_scores: Array = []
+var all_round_scores: Array = []
+var viewed_round_idx: int = 0
 var bots_thinking: Array = [false, false, false, false]
 
 func _ready() -> void:
 	if back_hand:
 		back_hand.visible = false
 		back_hand.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		back_hand.z_index = 5
+		
+	# Ensure hands always render on top of table/win area cards
+	left_player.z_index = 5
+	right_player.z_index = 5
+	top_player.z_index = 5
+	
+	# Ensure name labels and buttons render on the top UI layer (above hands and cards)
+	player_name_label.z_index = 20
+	left_name_label.z_index = 20
+	right_name_label.z_index = 20
+	top_name_label.z_index = 20
+	announcement.z_index = 20
+	score_panel.z_index = 20
+	
+	confirm_button.z_index = 20
 		
 	table_area.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	for slot in table_slots:
@@ -226,22 +248,73 @@ func _ready() -> void:
 			announcement_text.add_theme_constant_override("outline_size", 12)
 		
 	# Disable keyboard focus for all buttons to prevent focus outlines when pressing Tab
-	get_cards_button.focus_mode = Control.FOCUS_NONE
 	confirm_button.focus_mode = Control.FOCUS_NONE
-	reset_button.focus_mode = Control.FOCUS_NONE
 
 	# Connect button events
-	get_cards_button.pressed.connect(_on_get_cards_pressed)
-	get_cards_button.pressed.connect(func(): _play_sfx_transient(click_sfx))
-	get_cards_button.mouse_entered.connect(func(): _play_sfx_transient(hover_sfx))
-	
 	confirm_button.pressed.connect(_on_confirm_pressed)
 	confirm_button.pressed.connect(func(): _play_sfx_transient(click_sfx))
 	confirm_button.mouse_entered.connect(func(): _play_sfx_transient(hover_sfx))
 	
-	reset_button.pressed.connect(_on_reset_pressed)
-	reset_button.pressed.connect(func(): _play_sfx_transient(click_sfx))
-	reset_button.mouse_entered.connect(func(): _play_sfx_transient(hover_sfx))
+	# Create exit to menu button
+	var exit_btn = Button.new()
+	exit_btn.name = "ExitToMenuButton"
+	exit_btn.text = "Exit to Main Menu"
+	exit_btn.focus_mode = Control.FOCUS_NONE
+	exit_btn.visible = false
+	exit_btn.z_index = 25
+	
+	exit_btn.add_theme_font_override("font", custom_font)
+	exit_btn.add_theme_font_size_override("font_size", 24)
+	
+	exit_btn.anchors_preset = Control.PRESET_CENTER
+	exit_btn.anchor_left = 0.5
+	exit_btn.anchor_top = 0.5
+	exit_btn.anchor_right = 0.5
+	exit_btn.anchor_bottom = 0.5
+	exit_btn.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	exit_btn.grow_vertical = Control.GROW_DIRECTION_BOTH
+	
+	exit_btn.custom_minimum_size = Vector2(250, 60)
+	exit_btn.offset_left = -125
+	exit_btn.offset_right = 125
+	exit_btn.offset_top = 100
+	exit_btn.offset_bottom = 160
+	
+	var style_normal = StyleBoxFlat.new()
+	style_normal.bg_color = Color(0.08, 0.09, 0.12, 0.9)
+	style_normal.border_width_left = 2
+	style_normal.border_width_top = 2
+	style_normal.border_width_right = 2
+	style_normal.border_width_bottom = 2
+	style_normal.border_color = Color(0.25, 0.27, 0.35, 0.6)
+	style_normal.corner_radius_top_left = 8
+	style_normal.corner_radius_top_right = 8
+	style_normal.corner_radius_bottom_right = 8
+	style_normal.corner_radius_bottom_left = 8
+	
+	var style_hover = style_normal.duplicate()
+	style_hover.bg_color = Color(0.12, 0.14, 0.18, 0.95)
+	style_hover.border_color = Color(0.95, 0.76, 0.23, 0.8)
+	
+	var style_pressed = style_hover.duplicate()
+	style_pressed.bg_color = Color(0.05, 0.06, 0.08, 0.9)
+	
+	exit_btn.add_theme_stylebox_override("normal", style_normal)
+	exit_btn.add_theme_stylebox_override("hover", style_hover)
+	exit_btn.add_theme_stylebox_override("pressed", style_pressed)
+	
+	exit_btn.add_theme_color_override("font_color", Color.WHITE)
+	exit_btn.add_theme_color_override("font_hover_color", Color(0.95, 0.76, 0.23))
+	exit_btn.add_theme_color_override("font_pressed_color", Color(0.8, 0.6, 0.15))
+	
+	exit_btn.pressed.connect(func():
+		_play_sfx_transient(click_sfx)
+		get_tree().change_scene_to_file("res://scene/main_menu.tscn")
+	)
+	exit_btn.mouse_entered.connect(func(): _play_sfx_transient(hover_sfx))
+	
+	add_child(exit_btn)
+	exit_to_menu_button = exit_btn
 	
 	# Start all breathing animations
 	_start_all_breathing()
@@ -264,8 +337,91 @@ func _ready() -> void:
 		title_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 		title_lbl.add_theme_constant_override("outline_size", 12)
 		
+	# Instantiate Round Navigation Panel dynamically
+	var score_container = get_node_or_null("ScorePanel/ScoreContainer")
+	if score_container:
+		var nav_container = HBoxContainer.new()
+		nav_container.name = "RoundNav"
+		nav_container.alignment = BoxContainer.ALIGNMENT_CENTER
+		
+		var prev_btn = Button.new()
+		prev_btn.name = "PrevRoundBtn"
+		prev_btn.text = "< Prev Round"
+		prev_btn.focus_mode = Control.FOCUS_NONE
+		prev_btn.pressed.connect(_on_prev_round_pressed)
+		prev_btn.pressed.connect(func(): _play_sfx_transient(click_sfx))
+		prev_btn.mouse_entered.connect(func(): _play_sfx_transient(hover_sfx))
+		nav_container.add_child(prev_btn)
+		
+		var round_lbl = Label.new()
+		round_lbl.name = "RoundNumLabel"
+		round_lbl.text = "ROUND 1"
+		round_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		round_lbl.add_theme_font_override("font", custom_font)
+		round_lbl.add_theme_font_size_override("font_size", 18)
+		round_lbl.custom_minimum_size = Vector2(150, 0)
+		nav_container.add_child(round_lbl)
+		
+		var next_btn = Button.new()
+		next_btn.name = "NextRoundBtn"
+		next_btn.text = "Next Round >"
+		next_btn.focus_mode = Control.FOCUS_NONE
+		next_btn.pressed.connect(_on_next_round_pressed)
+		next_btn.pressed.connect(func(): _play_sfx_transient(click_sfx))
+		next_btn.mouse_entered.connect(func(): _play_sfx_transient(hover_sfx))
+		nav_container.add_child(next_btn)
+		
+		score_container.add_child(nav_container)
+		score_container.move_child(nav_container, 1)
+		
 	# Initialize time label visibility
 	_update_time_label()
+	
+	# Save the initial layout position of HandArea before positioning it off-screen
+	base_hand_y = $HandArea.position.y
+	
+	# Initialize all hands (including player HandArea) off-screen and invisible so they can animate in smoothly on first deal
+	var start_viewport_size = get_viewport_rect().size
+	$HandArea.position.y = start_viewport_size.y + 50.0
+	$HandArea.visible = false
+	
+	left_player.position.x = -600.0
+	right_player.position.x = start_viewport_size.x + 600.0
+	top_player.position.y = -600.0
+	
+	left_player.visible = false
+	right_player.visible = false
+	top_player.visible = false
+	
+	# Initialize presets
+	if select_time_preset == "Fast":
+		leader_select_time = 10.0
+		responder_select_time = 10.0
+	elif select_time_preset == "Long":
+		leader_select_time = 30.0
+		responder_select_time = 30.0
+	else:
+		leader_select_time = 20.0
+		responder_select_time = 20.0
+
+	# Show initial game configuration announcement
+	var rounds_str = "2 Rounds"
+	if round_preset == "Short":
+		rounds_str = "1 Round"
+	elif round_preset == "Long":
+		rounds_str = "4 Rounds"
+		
+	var config_text = game_mode + "\n" + rounds_str
+	
+	if not is_test_mode:
+		# Wait a small delay to let the window load and settle so the fade-in tween renders correctly
+		await get_tree().create_timer(0.15).timeout
+		var config_tween = _show_announcement(config_text, 3.0)
+		if config_tween:
+			await config_tween.finished
+			
+	# Automatically trigger first round deal
+	_get_cards(false)
 
 
 func _process(delta: float) -> void:
@@ -416,8 +572,10 @@ func _trigger_auto_bot_play(bot_idx: int) -> void:
 		
 	bots_thinking[bot_idx] = true
 	
-	# Determine random delay between 2.0 and 7.0 seconds
-	var delay = randf_range(2.0, 7.0)
+	# Determine random thinking delay based on bot style and delay range configs in BotAI
+	var active_style = bot_personalities.get(bot_idx, "Professor Jim")
+	var delay_range = BotAI.get_thinking_delay_range(active_style)
+	var delay = randf_range(delay_range.x, delay_range.y)
 	await get_tree().create_timer(delay).timeout
 	
 	# Reset state check after delay
@@ -483,27 +641,68 @@ func _auto_play_responder_for_player() -> void:
 func _input(event: InputEvent) -> void:
 	if is_test_mode:
 		return
-	if event is InputEventKey and event.keycode == KEY_TAB:
+	if event is InputEventKey and event.keycode == KEY_TAB and event.pressed and not event.is_echo():
 		get_viewport().set_input_as_handled() # Consume key event to block built-in Control focus cycling
-		if event.pressed:
-			_show_score_panel(true)
-		else:
-			_show_score_panel(false)
+		if score_panel:
+			_show_score_panel(not score_panel.visible)
 
 
 func _show_score_panel(show: bool) -> void:
 	if not score_panel:
 		return
 	if show:
+		viewed_round_idx = rounds_completed
 		_update_score_panel()
 		score_panel.visible = true
 	else:
 		score_panel.visible = false
 
 
+func _on_prev_round_pressed() -> void:
+	if viewed_round_idx > 0:
+		viewed_round_idx -= 1
+		_update_score_panel()
+
+
+func _on_next_round_pressed() -> void:
+	var max_rounds = 2
+	if round_preset == "Short":
+		max_rounds = 1
+	elif round_preset == "Long":
+		max_rounds = 4
+		
+	if viewed_round_idx < max_rounds - 1:
+		viewed_round_idx += 1
+		_update_score_panel()
+
+
 func _update_score_panel() -> void:
 	if not score_grid:
 		return
+		
+	# Update Navigation Buttons & Title Label
+	var prev_btn = get_node_or_null("ScorePanel/ScoreContainer/RoundNav/PrevRoundBtn")
+	var next_btn = get_node_or_null("ScorePanel/ScoreContainer/RoundNav/NextRoundBtn")
+	var round_lbl = get_node_or_null("ScorePanel/ScoreContainer/RoundNav/RoundNumLabel")
+	
+	if round_lbl:
+		round_lbl.text = "ROUND " + str(viewed_round_idx + 1)
+	if prev_btn:
+		prev_btn.disabled = (viewed_round_idx == 0)
+		
+	var max_rounds = 2
+	if round_preset == "Short":
+		max_rounds = 1
+	elif round_preset == "Long":
+		max_rounds = 4
+		
+	if next_btn:
+		next_btn.disabled = (viewed_round_idx >= max_rounds - 1)
+		
+	# Get loop scores of the currently viewed round
+	var current_view_loop_scores = []
+	if viewed_round_idx < all_round_scores.size():
+		current_view_loop_scores = all_round_scores[viewed_round_idx]
 		
 	# Clear existing children in grid
 	for child in score_grid.get_children():
@@ -526,32 +725,38 @@ func _update_score_panel() -> void:
 		
 	# 2. Add Row Data (0=Player, 1=Left, 2=Top, 3=Right)
 	var players = [
-		{"name": "Player", "key": "player"},
-		{"name": bot_personalities.get(1, "Left Bot"), "key": "left"},
-		{"name": bot_personalities.get(2, "Top Bot"), "key": "top"},
-		{"name": bot_personalities.get(3, "Right Bot"), "key": "right"}
+		{"name": "Player", "key": "player", "idx": 0},
+		{"name": bot_personalities.get(1, "Left Bot"), "key": "left", "idx": 1},
+		{"name": bot_personalities.get(2, "Top Bot"), "key": "top", "idx": 2},
+		{"name": bot_personalities.get(3, "Right Bot"), "key": "right", "idx": 3}
 	]
 	
 	for p_info in players:
 		var name_lbl = Label.new()
-		name_lbl.text = p_info["name"]
+		var is_last_winner = (p_info["idx"] == current_leader)
+		
+		if is_last_winner:
+			name_lbl.text = "**" + p_info["name"] + "**"
+			name_lbl.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0)) # Gold Color
+		else:
+			name_lbl.text = p_info["name"]
+			name_lbl.add_theme_color_override("font_color", Color.WHITE)
+			
 		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		name_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		name_lbl.add_theme_font_override("font", custom_font)
 		name_lbl.add_theme_font_size_override("font_size", 16)
-		name_lbl.add_theme_color_override("font_color", Color.WHITE)
 		name_lbl.add_theme_constant_override("outline_size", 4)
 		name_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 		score_grid.add_child(name_lbl)
 		
-		var total_score = 0
+		# Show loop scores for selected round
 		for loop_idx in range(4):
 			var score_lbl = Label.new()
 			var val = ""
-			if loop_idx < loop_scores.size():
-				var s = loop_scores[loop_idx][p_info["key"]]
+			if loop_idx < current_view_loop_scores.size():
+				var s = current_view_loop_scores[loop_idx][p_info["key"]]
 				val = str(s)
-				total_score += s
 			else:
 				val = "-"
 			score_lbl.text = val
@@ -564,6 +769,13 @@ func _update_score_panel() -> void:
 			score_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 			score_grid.add_child(score_lbl)
 			
+		# Cumulative TOTAL score across ALL rounds played so far
+		var total_score = 0
+		for r_idx in range(all_round_scores.size()):
+			var r_scores = all_round_scores[r_idx]
+			for l_score in r_scores:
+				total_score += l_score[p_info["key"]]
+				
 		var total_lbl = Label.new()
 		total_lbl.text = str(total_score)
 		total_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -575,7 +787,7 @@ func _update_score_panel() -> void:
 		total_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 		score_grid.add_child(total_lbl)
 
-	# 3. Add Check Sum Row (should be 8 for each loop, and up to 32 at Total)
+	# 3. Add Check Sum Row (should be 8 for each loop, and up to 32 * max_rounds at Total)
 	var checksum_lbl = Label.new()
 	checksum_lbl.text = "Check Sum"
 	checksum_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -591,8 +803,8 @@ func _update_score_panel() -> void:
 	for loop_idx in range(4):
 		var check_lbl = Label.new()
 		var val = ""
-		if loop_idx < loop_scores.size():
-			var s = loop_scores[loop_idx]["player"] + loop_scores[loop_idx]["left"] + loop_scores[loop_idx]["top"] + loop_scores[loop_idx]["right"]
+		if loop_idx < current_view_loop_scores.size():
+			var s = current_view_loop_scores[loop_idx]["player"] + current_view_loop_scores[loop_idx]["left"] + current_view_loop_scores[loop_idx]["top"] + current_view_loop_scores[loop_idx]["right"]
 			val = str(s)
 			grand_checksum += s
 		else:
@@ -607,8 +819,14 @@ func _update_score_panel() -> void:
 		check_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 		score_grid.add_child(check_lbl)
 		
+	# All-time check sum total
+	var grand_checksum_all_time = 0
+	for r_scores in all_round_scores:
+		for l_score in r_scores:
+			grand_checksum_all_time += l_score["player"] + l_score["left"] + l_score["top"] + l_score["right"]
+			
 	var grand_lbl = Label.new()
-	grand_lbl.text = str(grand_checksum)
+	grand_lbl.text = str(grand_checksum_all_time)
 	grand_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	grand_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	grand_lbl.add_theme_font_override("font", custom_font)
@@ -629,12 +847,15 @@ func _finish_loop_and_transition() -> void:
 	if loop_count < 4:
 		# Continue to the next loop with "last winner is the leader"
 		# The last winner index is already current_leader, so we keep it.
-		_on_get_cards_pressed(true)
+		_get_cards(true)
 	else:
 		# Round is complete (4 loops finished)
+		rounds_completed += 1
+		
 		# Calculate round winner
 		var totals = {"player": 0, "left": 0, "top": 0, "right": 0}
-		for s in loop_scores:
+		var current_round_scores = all_round_scores[rounds_completed - 1]
+		for s in current_round_scores:
 			totals["player"] += s["player"]
 			totals["left"] += s["left"]
 			totals["top"] += s["top"]
@@ -662,11 +883,78 @@ func _finish_loop_and_transition() -> void:
 				
 		var winner_text = ""
 		if winner_names.size() == 1:
-			winner_text = "Round Winner:\n" + winner_names[0]
+			winner_text = winner_names[0] + "\nget highest score!"
 		else:
-			winner_text = "Round Tie:\n" + ", ".join(winner_names)
+			winner_text = str(winner_names.size()) + " players\nget highest score!"
 			
-		_show_announcement(winner_text, 4.0)
+		var tween = _show_announcement(winner_text, 10.0)
+		if tween and not is_test_mode:
+			await tween.finished
+			
+		var max_rounds = 2
+		if round_preset == "Short":
+			max_rounds = 1
+		elif round_preset == "Long":
+			max_rounds = 4
+			
+		if rounds_completed >= max_rounds:
+			# Calculate match winner (total across all rounds)
+			var match_totals = {"player": 0, "left": 0, "top": 0, "right": 0}
+			for round_scores in all_round_scores:
+				for s in round_scores:
+					match_totals["player"] += s["player"]
+					match_totals["left"] += s["left"]
+					match_totals["top"] += s["top"]
+					match_totals["right"] += s["right"]
+					
+			var all_equal = (match_totals["player"] == match_totals["left"] and 
+							 match_totals["left"] == match_totals["top"] and 
+							 match_totals["top"] == match_totals["right"])
+							 
+			var match_text = "Match Completed!\n"
+			if all_equal:
+				match_text += "YOU PLAYED FOR NOTHING!"
+			else:
+				var max_match_score = -1
+				var match_winners = []
+				for key in match_totals.keys():
+					if match_totals[key] > max_match_score:
+						max_match_score = match_totals[key]
+						match_winners = [key]
+					elif match_totals[key] == max_match_score:
+						match_winners.append(key)
+						
+				var match_winner_names = []
+				for w in match_winners:
+					if w == "player":
+						match_winner_names.append("Player")
+					elif w == "left":
+						match_winner_names.append(bot_personalities.get(1, "Left Bot"))
+					elif w == "top":
+						match_winner_names.append(bot_personalities.get(2, "Top Bot"))
+					else:
+						match_winner_names.append(bot_personalities.get(3, "Right Bot"))
+						
+				if match_winner_names.size() == 1:
+					match_text += "Winner: " + match_winner_names[0]
+				else:
+					match_text += "Winners: " + ", ".join(match_winner_names)
+					
+			if not is_test_mode:
+				if exit_to_menu_button:
+					exit_to_menu_button.visible = true
+				_show_final_announcement(match_text)
+				rounds_completed = 0
+			else:
+				_show_announcement(match_text, 5.0)
+				rounds_completed = 0
+				all_round_scores.clear()
+				_reset()
+				_get_cards(false)
+		else:
+			# Automatically reset scoreboard and trigger a new round deal
+			_reset()
+			_get_cards(false)
 
 
 func _play_sfx_transient(stream: AudioStream) -> void:
@@ -679,7 +967,7 @@ func _play_sfx_transient(stream: AudioStream) -> void:
 	player.finished.connect(player.queue_free)
 
 
-func _on_get_cards_pressed(keep_leader: bool = false) -> void:
+func _get_cards(keep_leader: bool = false) -> void:
 	# Check if 4 loops have completed, in which case reset scoreboard for a new round
 	if loop_count >= 4:
 		loop_count = 0
@@ -688,16 +976,33 @@ func _on_get_cards_pressed(keep_leader: bool = false) -> void:
 
 	var hand_area = $HandArea
 	if not is_test_mode:
-		get_cards_button.disabled = true
-		reset_button.disabled = true
 		confirm_button.disabled = true
 		
 		if breathing_tween:
 			breathing_tween.kill()
+		if left_breathing_tween:
+			left_breathing_tween.kill()
+		if right_breathing_tween:
+			right_breathing_tween.kill()
+		if top_breathing_tween:
+			top_breathing_tween.kill()
+			
 		var screen_height = get_viewport_rect().size.y
-		var tween_hand_down = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
-		tween_hand_down.tween_property(hand_area, "position:y", screen_height + 50.0, 0.4)
-		await tween_hand_down.finished
+		var viewport_size = get_viewport_rect().size
+		
+		var tween_out = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+		tween_out.tween_property(hand_area, "position:y", screen_height + 50.0, 0.4)
+		tween_out.tween_property(left_player, "position:x", -600.0, 0.4)
+		tween_out.tween_property(right_player, "position:x", viewport_size.x + 600.0, 0.4)
+		tween_out.tween_property(top_player, "position:y", -600.0, 0.4)
+		
+		await tween_out.finished
+		
+		# Hide hands off-screen while dealing and showing announcement
+		hand_area.visible = false
+		left_player.visible = false
+		right_player.visible = false
+		top_player.visible = false
 
 	# 1. Clear any existing card views in all slots
 	for slot in slots:
@@ -716,19 +1021,15 @@ func _on_get_cards_pressed(keep_leader: bool = false) -> void:
 		for child in slot.get_children():
 			child.queue_free()
 			
-	# Reset bot player visuals
+	# Reset bot player visuals and place them off-screen before animating in
 	left_player.texture = l_thinking_tex
 	right_player.texture = r_thinking_tex
 	top_player.texture = t_thinking_tex
-	left_player.visible = true
-	right_player.visible = true
-	top_player.visible = true
-	left_player.position.x = base_left_x
-	right_player.position.x = base_right_x
-	top_player.position.y = base_top_y
-	_start_left_breathing()
-	_start_right_breathing()
-	_start_top_breathing()
+	
+	var viewport_size = get_viewport_rect().size
+	left_player.position.x = -600.0
+	right_player.position.x = viewport_size.x + 600.0
+	top_player.position.y = -600.0
 	
 	# Clear all internal card state
 	player_hand.clear()
@@ -761,8 +1062,6 @@ func _on_get_cards_pressed(keep_leader: bool = false) -> void:
 	if current_leader == 1: leader_name = bot_personalities.get(1, "Left Bot")
 	elif current_leader == 2: leader_name = bot_personalities.get(2, "Top Bot")
 	elif current_leader == 3: leader_name = bot_personalities.get(3, "Right Bot")
-	
-	_show_announcement("Start Round\nLeader: " + leader_name, 2.5)
 			
 	# 2. Generate a fresh deck of 32 cards, shuffle, and deal 8 to each player
 	var deck = _generate_deck()
@@ -795,22 +1094,50 @@ func _on_get_cards_pressed(keep_leader: bool = false) -> void:
 		# Store card id as metadata on the node for later matching
 		card_node.set_meta("card_id", card["id"])
 	
+	# Show start round announcement and wait for it to finish before showing hands
+	var start_tween = _show_announcement("Start Round\nLeader: " + leader_name, 2.5)
+	if start_tween and not is_test_mode:
+		await start_tween.finished
+		
 	# Animate hand back up to default position if not in test mode, otherwise snap
 	if not is_test_mode:
-		var tween_hand_up = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		tween_hand_up.tween_property(hand_area, "position:y", base_hand_y, 0.8)
-		await tween_hand_up.finished
+		hand_area.visible = true
+		left_player.visible = true
+		right_player.visible = true
+		top_player.visible = true
+		
+		var tween_all = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		# Animate player hand area up
+		tween_all.tween_property(hand_area, "position:y", base_hand_y, 0.8)
+		# Animate bot hands in from off-screen
+		tween_all.tween_property(left_player, "position:x", base_left_x, 0.8)
+		tween_all.tween_property(right_player, "position:x", base_right_x, 0.8)
+		tween_all.tween_property(top_player, "position:y", base_top_y, 0.8)
+		
+		await tween_all.finished
+		
 		_start_breathing_animation()
+		_start_left_breathing()
+		_start_right_breathing()
+		_start_top_breathing()
 	else:
+		hand_area.visible = true
+		left_player.visible = true
+		right_player.visible = true
+		top_player.visible = true
 		if base_hand_y != 0.0:
 			hand_area.position.y = base_hand_y
+		left_player.position.x = base_left_x
+		right_player.position.x = base_right_x
+		top_player.position.y = base_top_y
 		_start_breathing_animation()
+		_start_left_breathing()
+		_start_right_breathing()
+		_start_top_breathing()
 
 	# Update button states for leader
 	_update_button_states_for_turn()
-	if not is_test_mode:
-		reset_button.disabled = false
-		get_cards_button.disabled = false
+
 	
 	# Debug log
 	_print_debug_state("GET CARDS - All players dealt")
@@ -871,9 +1198,9 @@ func _update_leader_name_labels() -> void:
 	var labels = [player_name_label, left_name_label, top_name_label, right_name_label]
 	var base_names = [
 		"Player",
-		active_bot_personalities.get(1, bot_personalities.get(1, "Left Bot")),
-		active_bot_personalities.get(2, bot_personalities.get(2, "Top Bot")),
-		active_bot_personalities.get(3, bot_personalities.get(3, "Right Bot"))
+		bot_personalities.get(1, "Left Bot"),
+		bot_personalities.get(2, "Top Bot"),
+		bot_personalities.get(3, "Right Bot")
 	]
 	
 	for i in range(4):
@@ -886,7 +1213,7 @@ func _update_leader_name_labels() -> void:
 			continue
 			
 		if i == current_leader:
-			lbl.text = "**" + name_str + "**"
+			lbl.text = "** " + name_str + " **"
 			lbl.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0)) # Gold Color
 		else:
 			lbl.text = name_str
@@ -953,11 +1280,12 @@ func _find_combinations(hand: Array, play_type: String, count: int) -> Array:
 
 func _initialize_loop_personalities() -> void:
 	if loop_count == 0:
-		# Very first loop of the round: randomly assign base personalities
-		var pool = BotAI.PERSONALITY_POOL
-		bot_personalities[1] = pool[randi() % pool.size()]
-		bot_personalities[2] = pool[randi() % pool.size()]
-		bot_personalities[3] = pool[randi() % pool.size()]
+		# Very first loop of the round: randomly assign unique base personalities
+		var pool = BotAI.PERSONALITY_POOL.duplicate()
+		pool.shuffle()
+		bot_personalities[1] = pool[0]
+		bot_personalities[2] = pool[1]
+		bot_personalities[3] = pool[2]
 		print("--- ROUND START: Bot Personalities Assigned ---")
 		print("Left Bot (1): ", bot_personalities[1])
 		print("Top Bot (2): ", bot_personalities[2])
@@ -966,26 +1294,10 @@ func _initialize_loop_personalities() -> void:
 		
 	loop_count += 1
 	
-	# Resolve active personalities for this loop
-	for bot_idx in [1, 2, 3]:
-		var base = bot_personalities[bot_idx]
-		if base == "Meta Mezz":
-			if loop_count == 1:
-				active_bot_personalities[bot_idx] = "Joker"
-			else:
-				# Evaluate starting hand
-				var hand = []
-				if bot_idx == 1: hand = left_hand
-				elif bot_idx == 2: hand = top_hand
-				elif bot_idx == 3: hand = right_hand
-				active_bot_personalities[bot_idx] = BotAI.get_meta_mezz_personality(self, hand)
-		else:
-			active_bot_personalities[bot_idx] = base
-			
 	print("--- Loop ", loop_count, " Active Bot Styles ---")
-	print("Left Bot (1): ", active_bot_personalities[1])
-	print("Top Bot (2): ", active_bot_personalities[2])
-	print("Right Bot (3): ", active_bot_personalities[3])
+	print("Left Bot (1): ", bot_personalities[1])
+	print("Top Bot (2): ", bot_personalities[2])
+	print("Right Bot (3): ", bot_personalities[3])
 	print("--------------------------------------")
 	
 	# Highlight active leader
@@ -1087,8 +1399,6 @@ func _on_confirm_pressed() -> void:
 				player_hand.remove_at(found_idx)
 				player_table_cards.append(card_data)
 
-	# Disable buttons during animation
-	get_cards_button.disabled = true
 	confirm_button.disabled = true
 	
 	# Stop idle breathing animation
@@ -1155,7 +1465,6 @@ func _on_confirm_pressed() -> void:
 		tween_hand_up_again.tween_property(hand_area, "position:y", base_hand_y, 0.6)
 		await tween_hand_up_again.finished
 		_start_breathing_animation()
-		get_cards_button.disabled = false
 		confirm_button.disabled = false
 		return
 	
@@ -1247,9 +1556,7 @@ func _play_ready_sequence(player: TextureRect, table_area: Control, slots_list: 
 			hand_ref.remove_at(idx)
 		table_ref.append(card)
 
-	# Disable all controls during animation to avoid state overlap
-	reset_button.disabled = true
-	get_cards_button.disabled = true
+
 	
 	# Stop breathing tween
 	var breathing_tween: Tween
@@ -1365,7 +1672,7 @@ func _play_ready_sequence(player: TextureRect, table_area: Control, slots_list: 
 	if _has_everyone_played():
 		_start_reveal_and_scoring_sequence()
 
-func _on_reset_pressed() -> void:
+func _reset() -> void:
 	# Clear all internal card state
 	player_hand.clear()
 	left_hand.clear()
@@ -1394,7 +1701,6 @@ func _on_reset_pressed() -> void:
 	
 	loop_count = 0
 	bot_personalities.clear()
-	active_bot_personalities.clear()
 	loop_scores.clear()
 	bots_thinking = [false, false, false, false]
 	_update_score_panel()
@@ -1451,8 +1757,7 @@ func _on_reset_pressed() -> void:
 	
 	# Re-enable buttons
 	_update_button_states_for_turn()
-	reset_button.disabled = false
-	get_cards_button.disabled = false
+
 	
 	# Print debug state
 	_print_debug_state("RESET - Game state cleared")
@@ -1556,204 +1861,124 @@ func _reparent_card_to_top_level(card_node: Control) -> void:
 	card_node.global_position = orig_pos
 	card_node.rotation = orig_rot
 	card_node.scale = Vector2.ONE
+	card_node.z_index = 0
+
+
+func _show_winner(winner_idx: int) -> void:
+	var slots_list = []
+	if winner_idx == 0: slots_list = table_slots
+	elif winner_idx == 1: slots_list = left_slots
+	elif winner_idx == 2: slots_list = top_slots
+	else: slots_list = right_slots
+	
+	var winner_cards = []
+	for slot in slots_list:
+		if slot.get_child_count() > 0:
+			winner_cards.append(slot.get_child(0))
+			
+	if not winner_cards.is_empty() and not is_test_mode:
+		# Scale up to 1.4x
+		var tween_up = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		for card in winner_cards:
+			card.z_index = 10
+			card.pivot_offset = card.size / 2.0
+			tween_up.tween_property(card, "scale", Vector2(1.4, 1.4), 0.3)
+		await tween_up.finished
+		
+		# Stay big for 2 seconds
+		await get_tree().create_timer(2.0).timeout
+		
+		# Shrink back to 1.0x
+		var tween_down = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		for card in winner_cards:
+			tween_down.tween_property(card, "scale", Vector2.ONE, 0.3)
+		await tween_down.finished
+		for card in winner_cards:
+			card.z_index = 0
+	elif not winner_cards.is_empty() and is_test_mode:
+		pass
+		
+	# Show announcement of the winner name
+	var winner_name = "Player"
+	if winner_idx == 1: winner_name = bot_personalities.get(1, "Left Bot")
+	elif winner_idx == 2: winner_name = bot_personalities.get(2, "Top Bot")
+	elif winner_idx == 3: winner_name = bot_personalities.get(3, "Right Bot")
+	
+	var tween_announce = _show_announcement("Winner: " + winner_name, 2.0)
+	if tween_announce and not is_test_mode:
+		await tween_announce.finished
 
 
 func _collect_cards_to_winner(winner_idx: int) -> void:
 	var winner_won_ref: Array
 	var winner_win_area: Control
-	var winner_table_area: Control
-	var winner_slots: Array
 	
 	if winner_idx == 0:
 		winner_won_ref = player_won_cards
 		winner_win_area = player_win_area
-		winner_table_area = table_area
-		winner_slots = table_slots
 	elif winner_idx == 1:
 		winner_won_ref = left_won_cards
 		winner_win_area = left_win_area
-		winner_table_area = left_table_area
-		winner_slots = left_slots
 	elif winner_idx == 2:
 		winner_won_ref = top_won_cards
 		winner_win_area = top_win_area
-		winner_table_area = top_table_area
-		winner_slots = top_slots
 	else:
 		winner_won_ref = right_won_cards
 		winner_win_area = right_win_area
-		winner_table_area = right_table_area
-		winner_slots = right_slots
 
-	# 1. Floating Winner Cards Animation (Fake 3D)
-	var winner_card_nodes = []
-	for slot in winner_slots:
-		if slot.get_child_count() > 0:
-			winner_card_nodes.append(slot.get_child(0))
-			
-	var winner_name = "Player"
-	if winner_idx == 1: winner_name = bot_personalities.get(1, "Left Bot")
-	elif winner_idx == 2: winner_name = bot_personalities.get(2, "Top Bot")
-	elif winner_idx == 3: winner_name = bot_personalities.get(3, "Right Bot")
-			
-	if not winner_card_nodes.is_empty():
-		var float_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		var orig_positions = {}
-		var orig_global_positions = {}
-		var orig_global_rotations = {}
-		var orig_parents = {}
-		
-		var N = winner_card_nodes.size()
-		
-		# Temporarily reparent to top-level to render on the highest layer (drawn on top)
-		for card_node in winner_card_nodes:
-			var slot = card_node.get_parent()
-			orig_parents[card_node] = slot
-			orig_positions[card_node] = card_node.position
-			orig_global_positions[card_node] = card_node.global_position
-			orig_global_rotations[card_node] = card_node.get_global_transform().get_rotation()
-			
-			_reparent_card_to_top_level(card_node)
-			move_child(card_node, -1) # Draw on top of all siblings
-		
-		for i in range(N):
-			var card_node = winner_card_nodes[i]
-			
-			# Float in place slightly (offset by 20px inward towards center of screen)
-			var target_global_pos = orig_global_positions[card_node]
-			if winner_idx == 0:
-				target_global_pos.y -= 20.0
-			elif winner_idx == 2:
-				target_global_pos.y += 20.0
-			elif winner_idx == 1:
-				target_global_pos.x += 20.0
-			else:
-				target_global_pos.x -= 20.0
-			
-			float_tween.tween_property(card_node, "global_position", target_global_pos, 0.8)
-			float_tween.tween_property(card_node, "scale", Vector2(1.5, 1.5), 0.8)
-			float_tween.tween_property(card_node, "rotation", orig_global_rotations[card_node] + 0.05, 0.8)
-		await float_tween.finished
-		
-		# Show the floating winner cards for 3.0 seconds
-		await get_tree().create_timer(3.0).timeout
-		
-		# Return to original default position (winner's table) first
-		var land_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-		for card_node in winner_card_nodes:
-			land_tween.tween_property(card_node, "global_position", orig_global_positions[card_node], 0.8)
-			land_tween.tween_property(card_node, "scale", Vector2.ONE, 0.8)
-			land_tween.tween_property(card_node, "rotation", orig_global_rotations[card_node], 0.8)
-		await land_tween.finished
-		
-		# Put them back into their original slots
-		for card_node in winner_card_nodes:
-			var slot = orig_parents[card_node]
-			card_node.reparent(slot, false) # Reparent without keeping native global transform
-			
-		# After returning to default, show the announcement!
-		_show_announcement("Winner: " + winner_name, 2.5)
-	else:
-		# If no winner cards to float, show announcement immediately
-		_show_announcement("Winner: " + winner_name, 2.5)
-
-	# 2. Gather losing cards to winner's table area center
-	var losing_card_nodes = []
-	var all_slots_lists = [table_slots, left_slots, top_slots, right_slots]
-	for s_list in all_slots_lists:
-		if s_list != winner_slots:
-			for slot in s_list:
-				if slot.get_child_count() > 0:
-					var card_node = slot.get_child(0)
-					_reparent_card_to_top_level(card_node)
-					move_child(card_node, -1)
-					
-					var area_center = winner_table_area.global_position + (winner_table_area.size / 2.0)
-					var random_offset = Vector2(randf_range(-15, 15), randf_range(-15, 15))
-					var target_pos = area_center - (card_node.size / 2.0) + random_offset
-					losing_card_nodes.append({
-						"node": card_node,
-						"target_pos": target_pos,
-						"target_rot": randf_range(-0.15, 0.15)
-					})
-					
-	if not losing_card_nodes.is_empty():
-		var gather_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
-		for item in losing_card_nodes:
-			gather_tween.tween_property(item["node"], "global_position", item["target_pos"], 0.6)
-			gather_tween.tween_property(item["node"], "rotation", item["target_rot"], 0.6)
-		await gather_tween.finished
-
-	# 3. Winner's hand moves from offscreen to grab the pile
-	var winner_hand_node = back_hand
-	var hand_offscreen = Vector2.ZERO
-	var hand_target = Vector2.ZERO
-	var screen_height = get_viewport_rect().size.y
+	# 1. Setup hand visual node, base positions, and targets based on winner_idx
+	var winner_hand_node: Control
+	var bottom_target: float = 0.0
+	var hand_target: Vector2 = Vector2.ZERO
+	var hand_offscreen: Vector2 = Vector2.ZERO
 	
-	# Recalculate target coordinates for reveal hands
-	var bottom_target = table_area.position.y + (table_area.size.y / 2.0) - (back_hand.size.y / 2.0) + BACKHAND_OFFSET
-	var left_center = left_table_area.position + (left_table_area.size / 2.0).rotated(left_table_area.rotation)
-	var left_target = left_center - (left_player.size / 2.0).rotated(left_player.rotation) + Vector2.LEFT * SIDE_BACKHAND_OFFSET
-	var left_offscreen = Vector2(-600.0, left_player.position.y)
-	var right_center = right_table_area.position + (right_table_area.size / 2.0).rotated(right_table_area.rotation)
-	var right_target = right_center - (right_player.size / 2.0).rotated(right_player.rotation) + Vector2.RIGHT * SIDE_BACKHAND_OFFSET
-	var right_offscreen = Vector2(get_viewport_rect().size.x + 600.0, right_player.position.y)
-	var top_center = top_table_area.position + (top_table_area.size / 2.0).rotated(top_table_area.rotation)
-	var top_target = top_center - (top_player.size / 2.0).rotated(top_player.rotation) + Vector2.UP * TOP_BACKHAND_OFFSET
-	var top_offscreen = Vector2(top_player.position.x, -600.0)
-
+	var viewport_size = get_viewport_rect().size
+	var screen_height = viewport_size.y
+	
 	if winner_idx == 0:
 		winner_hand_node = back_hand
-		winner_hand_node.position.y = screen_height + 50.0
-		winner_hand_node.position.x = (get_viewport_rect().size.x - winner_hand_node.size.x) / 2.0
-		hand_offscreen = Vector2(winner_hand_node.position.x, screen_height + 50.0)
-		hand_target = Vector2(winner_hand_node.position.x, bottom_target)
+		bottom_target = table_area.position.y + (table_area.size.y / 2.0) - (back_hand.size.y / 2.0) + BACKHAND_OFFSET
 	elif winner_idx == 1:
 		winner_hand_node = left_player
-		winner_hand_node.texture = backhand_tex
-		winner_hand_node.position = left_offscreen
-		hand_offscreen = left_offscreen
-		hand_target = left_target
+		left_player.texture = backhand_tex
+		hand_offscreen = Vector2(-600.0, left_player.position.y)
+		var left_center = left_table_area.position + (left_table_area.size / 2.0).rotated(left_table_area.rotation)
+		hand_target = left_center - (left_player.size / 2.0).rotated(left_player.rotation) + Vector2.LEFT * SIDE_BACKHAND_OFFSET
 	elif winner_idx == 2:
 		winner_hand_node = top_player
-		winner_hand_node.texture = backhand_tex
-		winner_hand_node.position = top_offscreen
-		hand_offscreen = top_offscreen
-		hand_target = top_target
+		top_player.texture = backhand_tex
+		hand_offscreen = Vector2(top_player.position.x, -600.0)
+		var top_center = top_table_area.position + (top_table_area.size / 2.0).rotated(top_table_area.rotation)
+		hand_target = top_center - (top_player.size / 2.0).rotated(top_player.rotation) + Vector2.UP * TOP_BACKHAND_OFFSET
 	else:
 		winner_hand_node = right_player
-		winner_hand_node.texture = backhand_tex
-		winner_hand_node.position = right_offscreen
-		hand_offscreen = right_offscreen
-		hand_target = right_target
-		
-	winner_hand_node.visible = true
-	var grab_hand_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	if winner_idx == 0:
-		grab_hand_tween.tween_property(winner_hand_node, "position:y", bottom_target, 0.6)
-	else:
-		grab_hand_tween.tween_property(winner_hand_node, "position", hand_target, 0.6)
-	await grab_hand_tween.finished
-	
-	_play_sfx_transient(click_sfx)
-	await get_tree().create_timer(0.2).timeout
+		right_player.texture = backhand_tex
+		hand_offscreen = Vector2(viewport_size.x + 600.0, right_player.position.y)
+		var right_center = right_table_area.position + (right_table_area.size / 2.0).rotated(right_table_area.rotation)
+		hand_target = right_center - (right_player.size / 2.0).rotated(right_player.rotation) + Vector2.RIGHT * SIDE_BACKHAND_OFFSET
 
-	# 4. Reparent winner cards and gather all cards to fly to WinArea with hand
-	var cards_to_collect = []
-	
-	# Add winner's cards
-	for slot in winner_slots:
-		if slot.get_child_count() > 0:
-			var card_node = slot.get_child(0)
-			_reparent_card_to_top_level(card_node)
-			move_child(card_node, -1)
-			cards_to_collect.append(card_node)
+	# 2. Position hand off-screen and animate toward the table area (Grab Phase)
+	if not is_test_mode:
+		winner_hand_node.visible = true
+		if winner_idx == 0:
+			winner_hand_node.position.y = screen_height + 50.0
+			winner_hand_node.position.x = (viewport_size.x - winner_hand_node.size.x) / 2.0
+		else:
+			winner_hand_node.position = hand_offscreen
 			
-	# Add losing cards
-	for item in losing_card_nodes:
-		cards_to_collect.append(item["node"])
+		var grab_hand_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		if winner_idx == 0:
+			grab_hand_tween.tween_property(winner_hand_node, "position:y", bottom_target, 0.6)
+		else:
+			grab_hand_tween.tween_property(winner_hand_node, "position", hand_target, 0.6)
+		await grab_hand_tween.finished
 
-	# Append card data to the winner's list
+	# Play sfx after hand reaches cards
+	_play_sfx_transient(click_sfx)
+	if not is_test_mode:
+		await get_tree().create_timer(0.2).timeout
+
+	# 3. Update won card data collections
 	var current_won_count = winner_won_ref.size()
 	winner_won_ref.append_array(player_table_cards)
 	winner_won_ref.append_array(left_table_cards)
@@ -1765,53 +1990,67 @@ func _collect_cards_to_winner(winner_idx: int) -> void:
 	left_table_cards.clear()
 	right_table_cards.clear()
 	top_table_cards.clear()
-	
-	# Build parallel tween to move hand and cards
-	var hand_win_target = winner_win_area.global_position + (winner_win_area.size / 2.0) - (winner_hand_node.size / 2.0)
-	var collect_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
-	
-	# Move hand
-	if winner_idx == 0:
-		collect_tween.tween_property(winner_hand_node, "position", hand_win_target, 0.8)
-	else:
-		collect_tween.tween_property(winner_hand_node, "global_position", hand_win_target, 0.8)
+
+	# 4. Gather all played cards from slots
+	var cards_to_collect = []
+	var all_slots = table_slots + left_slots + top_slots + right_slots
+	for slot in all_slots:
+		if slot.get_child_count() > 0:
+			var card_node = slot.get_child(0)
+			_reparent_card_to_top_level(card_node)
+			move_child(card_node, -1)
+			cards_to_collect.append(card_node)
+
+	# 5. Animate cards flying to the winner's win area along with the hand (Flight Phase)
+	if not cards_to_collect.is_empty() and not is_test_mode:
+		var hand_win_target = winner_win_area.global_position + (winner_win_area.size / 2.0) - (winner_hand_node.size / 2.0)
+		var collect_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
 		
-	# Move cards
-	for i in range(cards_to_collect.size()):
-		var card_node = cards_to_collect[i]
-		card_node.pivot_offset = card_node.size / 2.0
-		
-		# Find the target slot for this specific card
-		var stack_offset = i / 4
-		var stack_idx = (current_won_count / 4) + 1 + stack_offset
-		stack_idx = clamp(stack_idx, 1, 8)
-		
-		var icon_node = winner_win_area.get_node_or_null("CardIcon_" + str(stack_idx))
-		var target_pos: Vector2
-		if icon_node:
-			target_pos = icon_node.global_position + (icon_node.size / 2.0) - (card_node.size / 2.0)
+		# Move hand to win area
+		if winner_idx == 0:
+			collect_tween.tween_property(winner_hand_node, "position", hand_win_target, 0.8)
 		else:
-			target_pos = winner_win_area.global_position + (winner_win_area.size / 2.0) - (card_node.size / 2.0)
+			collect_tween.tween_property(winner_hand_node, "global_position", hand_win_target, 0.8)
 			
-		collect_tween.tween_property(card_node, "global_position", target_pos, 0.8)
-		collect_tween.tween_property(card_node, "scale", Vector2(0.5, 0.5), 0.8)
-		collect_tween.tween_property(card_node, "modulate:a", 0.0, 0.8)
+		# Move cards to win area
+		for i in range(cards_to_collect.size()):
+			var card_node = cards_to_collect[i]
+			card_node.pivot_offset = card_node.size / 2.0
+			
+			var stack_offset = i / 4
+			var stack_idx = (current_won_count / 4) + 1 + stack_offset
+			stack_idx = clamp(stack_idx, 1, 8)
+			
+			var icon_node = winner_win_area.get_node_or_null("CardIcon_" + str(stack_idx))
+			var target_pos: Vector2
+			if icon_node:
+				target_pos = icon_node.global_position + (icon_node.size / 2.0) - (card_node.size / 2.0)
+			else:
+				target_pos = winner_win_area.global_position + (winner_win_area.size / 2.0) - (card_node.size / 2.0)
+				
+			collect_tween.tween_property(card_node, "global_position", target_pos, 0.8)
+			collect_tween.tween_property(card_node, "scale", Vector2(0.5, 0.5), 0.8)
+			collect_tween.tween_property(card_node, "modulate:a", 0.0, 0.8)
+			
+		await collect_tween.finished
 		
-	await collect_tween.finished
-	
+	# Free visual card nodes
 	for card_node in cards_to_collect:
 		card_node.queue_free()
-		
+
+	# 6. Update the win area stack counters
 	_update_win_area_icons(winner_win_area, winner_won_ref.size())
 
-	# 5. Move winner's hand back offscreen and hide it
-	var return_hand_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
-	if winner_idx == 0:
-		return_hand_tween.tween_property(winner_hand_node, "position:y", screen_height + 50.0, 0.6)
-	else:
-		return_hand_tween.tween_property(winner_hand_node, "position", hand_offscreen, 0.6)
-	await return_hand_tween.finished
-	winner_hand_node.visible = false
+	# 7. Move winner's hand back off-screen and hide it (Return Phase)
+	if not is_test_mode:
+		var return_hand_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+		if winner_idx == 0:
+			return_hand_tween.tween_property(winner_hand_node, "position:y", screen_height + 50.0, 0.6)
+		else:
+			return_hand_tween.tween_property(winner_hand_node, "position", hand_offscreen, 0.6)
+		await return_hand_tween.finished
+		winner_hand_node.visible = false
+
 
 func _update_win_area_icons(win_area: Control, won_cards_count: int) -> void:
 	if not win_area:
@@ -1836,21 +2075,34 @@ func _show_announcement(text: String, duration: float = 2.0) -> Tween:
 	
 	announcement_tween = create_tween()
 	# Fade in
-	announcement_tween.tween_property(announcement, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	announcement_tween.tween_property(announcement, "modulate:a", 1.0, 0.3).from(0.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	# Wait duration
 	announcement_tween.tween_interval(duration)
 	# Fade out
-	announcement_tween.tween_property(announcement, "modulate:a", 0.0, 0.4).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	announcement_tween.tween_property(announcement, "modulate:a", 0.0, 0.4).from(1.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
 	# Hide
 	announcement_tween.tween_callback(func(): announcement.visible = false)
 	return announcement_tween
 
 
+func _show_final_announcement(text: String) -> void:
+	if not announcement or not announcement_text:
+		return
+	announcement_text.text = text
+	
+	if announcement_tween:
+		announcement_tween.kill()
+		
+	announcement.visible = true
+	announcement.modulate.a = 0.0
+	
+	announcement_tween = create_tween()
+	# Fade in and keep it visible
+	announcement_tween.tween_property(announcement, "modulate:a", 1.0, 0.3).from(0.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
+
 func _start_reveal_and_scoring_sequence() -> void:
-	# Disable all ready/confirm buttons during reveal
 	confirm_button.disabled = true
-	reset_button.disabled = true
-	get_cards_button.disabled = true
 	
 	_show_announcement("Revealing The Card!", 2.0)
 	
@@ -1940,6 +2192,7 @@ func _start_reveal_and_scoring_sequence() -> void:
 	print("Scoring: Winner of the turn is ", winner_name)
 	
 	# Animate card collection to winner
+	await _show_winner(winner_idx)
 	await _collect_cards_to_winner(winner_idx)
 	
 	# Set next leader to winner
@@ -1953,9 +2206,7 @@ func _start_reveal_and_scoring_sequence() -> void:
 	active_card_count = 0
 	has_played = [false, false, false, false]
 	
-	# Re-enable reset and get_cards
-	reset_button.disabled = false
-	get_cards_button.disabled = false
+
 	
 	# Check if hand cards are empty (loop ends)
 	if player_hand.is_empty():
@@ -1967,10 +2218,15 @@ func _start_reveal_and_scoring_sequence() -> void:
 		var t_score = top_won_cards.size() / 4
 		var r_score = right_won_cards.size() / 4
 		
+		var r_idx = rounds_completed
+		while all_round_scores.size() <= r_idx:
+			all_round_scores.append([])
+			
 		var loop_idx = loop_count - 1 # loop_count is 1-indexed (incremented in _initialize_loop_personalities)
-		while loop_scores.size() <= loop_idx:
-			loop_scores.append({"player": 0, "left": 0, "top": 0, "right": 0})
-		loop_scores[loop_idx] = {
+		var round_scores = all_round_scores[r_idx]
+		while round_scores.size() <= loop_idx:
+			round_scores.append({"player": 0, "left": 0, "top": 0, "right": 0})
+		round_scores[loop_idx] = {
 			"player": p_score,
 			"left": l_score,
 			"top": t_score,

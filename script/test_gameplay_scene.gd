@@ -43,8 +43,7 @@ func run_tests():
 
 func run_basic_checks(gameplay):
 	print("Testing basic node bindings...")
-	assert(gameplay.get_cards_button != null, "get_cards_button must exist")
-	assert(gameplay.reset_button != null, "reset_button must exist")
+	# get_cards_button and reset_button have been removed from the scene
 
 	assert(gameplay.confirm_button != null, "confirm_button must exist")
 	assert(gameplay.announcement != null, "announcement overlay must exist")
@@ -56,7 +55,7 @@ func run_basic_checks(gameplay):
 
 func run_deal_checks(gameplay):
 	print("Testing deal/starting round...")
-	gameplay._on_get_cards_pressed()
+	gameplay._get_cards()
 	
 	assert(gameplay.player_hand.size() == 8, "Player hand should be 8 cards")
 	assert(gameplay.left_hand.size() == 8, "Left hand should be 8 cards")
@@ -211,7 +210,7 @@ func run_winner_logic_checks(gameplay):
 		{"rank": 7, "color": "B", "id": "B_7Chip"}
 	]
 	# Hand contains B_1King (General) and R_3Elephant pair. Hand size = 5.
-	gameplay.active_bot_personalities[1] = "The Professor"
+	gameplay.bot_personalities[1] = "Professor Jim"
 	
 	# Test 9.1: Leader play with hand size > 3
 	var lead_play = BotAI.select_play(gameplay, test_hand, "", 0, 1)
@@ -233,6 +232,63 @@ func run_winner_logic_checks(gameplay):
 	assert(respond_pair.size() == 2, "Should play 2 cards")
 	assert(respond_pair[0]["id"].begins_with("R_3Elephant") and respond_pair[1]["id"].begins_with("R_3Elephant"), "Should play the saved pair")
 	
+	# Test 9.4: King-Pair-King Endgame (4 cards)
+	var kpk_hand = [
+		{"rank": 1, "color": "R", "id": "R_1King"},
+		{"rank": 1, "color": "B", "id": "B_1King"},
+		{"rank": 4, "color": "B", "id": "B_4Boat_1"},
+		{"rank": 4, "color": "B", "id": "B_4Boat_2"}
+	]
+	var lead_kpk = BotAI.select_play(gameplay, kpk_hand, "", 0, 1) # Bot index 1 is Professor Jim
+	assert(lead_kpk.size() == 1, "KPK should lead 1 card")
+	assert(lead_kpk[0]["id"] == "B_1King", "KPK should lead weaker King (Black General)")
+
+	# Test 9.5: King-For-Set Endgame (5 cards total: Red King + 4-card Soldier Set)
+	var kfs_hand = [
+		{"rank": 1, "color": "R", "id": "R_1King"},
+		{"rank": 7, "color": "R", "id": "R_7Chip_1"},
+		{"rank": 7, "color": "R", "id": "R_7Chip_2"},
+		{"rank": 7, "color": "R", "id": "R_7Chip_3"},
+		{"rank": 7, "color": "R", "id": "R_7Chip_4"}
+	]
+	var lead_kfs = BotAI.select_play(gameplay, kfs_hand, "", 0, 1)
+	assert(lead_kfs.size() == 1, "KFS should lead 1 card")
+	assert(lead_kfs[0]["id"] == "R_1King", "KFS should lead the Red General")
+
+	# Test 9.6: Double-Red-Plane-Split
+	var split_hand = [
+		{"rank": 2, "color": "R", "id": "R_2Plane_1"},
+		{"rank": 2, "color": "R", "id": "R_2Plane_2"},
+		{"rank": 5, "color": "R", "id": "R_5Horse_1"},
+		{"rank": 6, "color": "R", "id": "R_6House_1"}
+	]
+	# Case A: Kings are NOT played yet, nor in hand. Red Planes should be protected (not split).
+	gameplay.player_won_cards.clear()
+	gameplay.left_won_cards.clear()
+	gameplay.right_won_cards.clear()
+	gameplay.top_won_cards.clear()
+	gameplay.player_table_cards.clear()
+	gameplay.left_table_cards.clear()
+	gameplay.right_table_cards.clear()
+	gameplay.top_table_cards.clear()
+	var lead_no_split = BotAI.select_play(gameplay, split_hand, "", 0, 1)
+	assert(lead_no_split[0]["id"] not in ["R_2Plane_1", "R_2Plane_2"], "Should not split Red Planes when Kings are active")
+
+	# Case B: Kings are played. Put them in won cards so bot memory can see them.
+	gameplay.player_won_cards = [
+		{"rank": 1, "color": "R", "id": "R_1King"},
+		{"rank": 1, "color": "B", "id": "B_1King"}
+	]
+	# Max May memorizes everything, so it should split them. Let's switch bot 1 to Max May
+	gameplay.bot_personalities[1] = "Max May"
+	var lead_split = BotAI.select_play(gameplay, split_hand, "", 0, 1)
+	assert(lead_split.size() == 1, "Should lead 1 card")
+	assert(lead_split[0]["id"] in ["R_2Plane_1", "R_2Plane_2"], "Should split Red Planes since all Kings are played")
+	
+	# Restore gameplay state
+	gameplay.player_won_cards.clear()
+	gameplay.bot_personalities[1] = "Professor Jim"
+
 	print("Winner determination scenarios passed.")
 	
 	run_timer_timeout_checks(gameplay)

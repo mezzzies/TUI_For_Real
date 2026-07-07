@@ -93,17 +93,18 @@ A player who wins 7 consecutive turns from the start of a loop and holds a **Bla
 
 ## 5. AI Bot Personalities
 
-The AI players exhibit distinct profiles, detailed in [bot_personalities.md](file:///d:/01_Working/07_Project/TUI/md/bot_personalities.md):
+The AI players exhibit distinct profiles:
 1. **Big Bobby**: Aggressive front-runner. Plays top cards early, aims for the "Perfect" tactic, and saves a General-Pair endgame combination.
-2. **Shadow**: Defensive late-game hoarder. Conserves high-value cards, folds weak cards strategicially, and saves a General-Pair combination.
-3. **The Owl**: Deceptive and opportunistic. Prefers Soldier Sets and low-value Pairs to bait opponents.
-4. **The Professor**: Balanced mathematical gatekeeper. Avoids overcommitting, protects against runaway leads, and saves a General-Pair combination.
+2. **Shadow**: Defensive late-game hoarder. Conserves high-value cards, folds weak cards strategically, and saves a General-Pair combination.
+3. **Dr. Lu Yerf**: Deceptive and opportunistic. Prefers Soldier Sets and low-value Pairs to bait opponents.
+4. **Professor Jim**: Balanced mathematical gatekeeper. Avoids overcommitting, protects against runaway leads, and saves a General-Pair combination.
 5. **Mrs. Jones**: Structured bottom-up player. Plays lowest cards first while holding $>4$ cards, and shifts to highest first when holding $\le 4$ cards.
-6. **Joker**: Wildcard. Plays completely randomly.
-7. **Meta Mezz**: Adaptive mimic. Evaluates its dealt hand at the start of each loop to switch between **Big Bobby**, **Shadow**, **The Owl**, and **The Professor** profiles.
+6. **Dum Dum**: Wildcard. Plays completely randomly.
+7. **Sammy**: Smart aggressive power player. Plays Noble Sets and strongest Pairs first, never wastes a turn on weak leads.
+8. **Max May**: Optimal calculated dominator. Probes with mid-range singles, conserves Generals for endgame, folds when winning costs too much.
 
 > [!NOTE]
-> **King-Pair Endgame Strategy**: Big Bobby, Shadow, and The Professor protect a General (King) and a Pair in their hands. They save them to play when exactly 3 cards remain—leading the King first to win the lead, then the Pair to empty their hand.
+> **King-Pair Endgame Strategy**: Big Bobby, Shadow, Professor Jim, Sammy, and Max May protect a General (King) and a Pair in their hands. They save them to play when exactly 3 cards remain—leading the King first to win the lead, then the Pair to empty their hand.
 
 ---
 
